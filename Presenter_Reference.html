@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presenter Reference Guide — Cross-Lingual Hate Speech Detection</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #1a1a2e;
+    background: #f8f9fc;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+  h1 { font-size: 1.9rem; font-weight: 800; color: #1a1a2e; margin-bottom: .3rem; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.2rem 0 .7rem; color: #1E2761; border-left: 5px solid #F5A623; padding-left: .7rem; }
+  h3 { font-size: 1.02rem; font-weight: 700; margin: 1.3rem 0 .4rem; color: #1E2761; }
+  h4 { font-size: .95rem; font-weight: 700; margin: 1rem 0 .3rem; color: #475569; }
+  p  { margin-bottom: .75rem; }
+  ul, ol { margin: .4rem 0 .75rem 1.5rem; }
+  li { margin-bottom: .3rem; }
+  strong { color: #1a1a2e; }
+  em { color: #475569; }
+
+  .cover {
+    background: linear-gradient(135deg, #1E2761 0%, #253275 60%, #2d3a8c 100%);
+    color: white; border-radius: 14px; padding: 2.5rem 2.2rem; margin-bottom: 2rem;
+  }
+  .cover h1 { color: white; }
+  .cover .sub { color: #FDE68A; font-size: 1rem; margin-top: .35rem; }
+  .cover .meta { margin-top: 1.2rem; font-size: .88rem; color: #C4A252; }
+
+  .slide-block {
+    background: white; border-radius: 12px; padding: 1.8rem;
+    margin-bottom: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    border-top: 4px solid #1E2761;
+  }
+  .slide-label {
+    display: inline-block; background: #1E2761; color: white;
+    font-size: .75rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; padding: .22rem .65rem; border-radius: 20px;
+    margin-bottom: .6rem;
+  }
+  .slide-title {
+    font-size: 1.35rem; font-weight: 800; color: #1E2761; margin-bottom: 1rem;
+  }
+
+  .box { border-radius: 8px; padding: .85rem 1rem; margin: .9rem 0; font-size: .93rem; }
+  .box-concept { background: #e8f4fd; border-left: 4px solid #2196f3; }
+  .box-key     { background: #e8f5e9; border-left: 4px solid #4caf50; }
+  .box-warn    { background: #fff8e1; border-left: 4px solid #ff9800; }
+  .box-qa      { background: #f3e5f5; border-left: 4px solid #9c27b0; }
+  .box-math    { background: #f5f5f5; border-left: 4px solid #607d8b; font-family: monospace; font-size: .88em; white-space: pre-wrap; }
+
+  .qa-item { background: #fafbff; border: 1px solid #e0e4f0; border-radius: 8px; padding: 1rem; margin: .7rem 0; }
+  .qa-q { font-weight: 700; color: #1E2761; margin-bottom: .4rem; }
+  .qa-q::before { content: "Q: "; color: #F5A623; }
+  .qa-a::before { content: "A: "; color: #28a745; font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .9rem; }
+  th { background: #1E2761; color: white; padding: .55rem .8rem; text-align: left; }
+  td { padding: .5rem .8rem; border-bottom: 1px solid #e9ecef; }
+  tr:nth-child(even) td { background: #f8f9fa; }
+  .hl td { background: #fff9c4 !important; font-weight: 600; }
+
+  code { font-family: monospace; font-size: .85em; background: #eef0f8; padding: .1em .35em; border-radius: 4px; }
+
+  .divider { border: none; border-top: 2px dashed #dee2e6; margin: 2rem 0; }
+
+  .qa-section { background: white; border-radius: 12px; padding: 1.8rem; margin-bottom: 1.6rem; box-shadow: 0 2px 8px rgba(0,0,0,.07); border-top: 4px solid #9c27b0; }
+
+  @media print {
+    body { background: white; font-size: 12px; padding: 1rem; }
+    .slide-block, .qa-section { box-shadow: none; break-inside: avoid; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>Presenter Reference Guide</h1>
+  <div class="sub">Cross-Lingual Hate Speech Detection: English → Roman Urdu</div>
+  <div class="meta">
+    AI-600 Deep Learning &nbsp;·&nbsp; LUMS Spring 2026 &nbsp;·&nbsp;
+    Muteeullah Baig &amp; Rana Muhammad Hamza<br>
+    <strong style="color:#FDE68A">Use this document to understand every concept deeply and prepare for Q&amp;A</strong>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 1</div>
+  <div class="slide-title">Cross-Lingual Hate Speech Detection: English → Roman Urdu</div>
+
+  <h3>What this project is about</h3>
+  <p>This project asks one fundamental question: <strong>can a model trained to detect hate speech in English automatically work on Roman Urdu</strong>, without needing thousands of labelled Roman Urdu examples? This is called <em>cross-lingual transfer learning</em>.</p>
+
+  <h3>What is Transfer Learning?</h3>
+  <div class="box box-concept">
+    Transfer learning means taking a model that learned one task (hate speech in English) and applying its knowledge to a related task (hate speech in Roman Urdu). The idea is that language understanding is partially universal — knowing what hateful language looks like in one language gives you a head start in another.
+  </div>
+
+  <h3>What is Roman Urdu?</h3>
+  <p>Roman Urdu is Urdu written using the Latin (English) alphabet instead of the Nastaliq script. It has <strong>no standardised spelling</strong> — the same word can be written 5–10 different ways by different users. It is the dominant informal writing style on Pakistani social media (Twitter, Facebook, WhatsApp broadcasts). Example: "yeh log bohat bure hain" (these people are very bad) — written differently by every user.</p>
+
+  <h3>Why is this hard?</h3>
+  <ul>
+    <li>Roman Urdu does not appear in most multilingual model training corpora</li>
+    <li>Spelling is completely non-standard and varies per user</li>
+    <li>Hate signals in Roman Urdu are culturally specific (sectarian, ethnic, gender-based) and do not translate directly from English hate speech patterns</li>
+    <li>Labelled Roman Urdu hate speech data is extremely scarce</li>
+  </ul>
+
+  <div class="qa-item">
+    <div class="qa-q">Why not just translate Roman Urdu to English and use an English model?</div>
+    <div class="qa-a">Translation is lossy — slang, culturally-specific insults, and informal Roman Urdu expressions either do not translate or are mistranslated. Machine translation systems (like Google Translate) are also not reliable for Roman Urdu precisely because of its non-standard spelling. Our approach avoids this by working directly on the raw Roman Urdu text.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Why not just use GPT-4 or a large language model?</div>
+    <div class="qa-a">Our research goal is to study cross-lingual transfer in a low-resource, few-shot setting using multilingual transformers. LLMs are also computationally expensive to run locally and raise data privacy concerns. Our approach (XLM-R fine-tuning) runs on a single consumer GPU (RTX 4070) and is deployable at scale.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 2 — PROBLEM STATEMENT
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 2</div>
+  <div class="slide-title">Problem Statement</div>
+
+  <h3>RQ1 — Model Capacity</h3>
+  <p>We compare three models of increasing size: <strong>mBERT (179M parameters)</strong>, <strong>XLM-R-base (278M)</strong>, and <strong>XLM-R-large (560M)</strong>. The research question is: does a larger, more capable multilingual model transfer better to Roman Urdu?</p>
+  <div class="box box-warn">
+    The answer turns out to be counterintuitive: XLM-R-large achieves the best English performance but the <em>worst</em> zero-shot Roman Urdu performance (Hate F1 = 0.005). This is called <strong>negative transfer</strong> — the model has learned English-specific hate patterns so strongly that it becomes overly conservative on Urdu text.
+  </div>
+
+  <h3>RQ2 — Zero-Shot Transfer</h3>
+  <p>Zero-shot means applying the English-trained model directly to Roman Urdu without any Urdu examples. The hypothesis is that shared multilingual representations allow cross-lingual generalisation. Our result: it completely fails (Hate F1 &lt; 0.07 across all models).</p>
+
+  <h3>RQ3 — Few-Shot Mitigation</h3>
+  <p>Instead of zero-shot, we provide K = 8, 16, 32, or 64 labelled Roman Urdu examples and continue training. We compare two approaches: <strong>standard fine-tuning</strong> (which collapses) and <strong>prompt-based fine-tuning</strong> (which succeeds). The key finding: standard fine-tuning collapses to predicting everything as hate even at K=64 in some settings, while prompt-based reaches Macro F1 = 0.745.</p>
+
+  <h3>RQ4 — Fairness</h3>
+  <p><strong>False Positive Rate (FPR)</strong> = FP / (FP + TN). It measures how often the model wrongly flags safe content as hate. A high FPR on a specific demographic group means that group's non-hateful speech is disproportionately censored — a serious fairness concern for content moderation systems.</p>
+  <p>We found religion-mentioning text has FPR = 0.143 vs 0.027 overall — 5.3× higher. This is because in the English Davidson dataset, religious terminology co-occurs with hate speech more than in Roman Urdu.</p>
+
+  <div class="qa-item">
+    <div class="qa-q">What is the practical impact of a high false positive rate?</div>
+    <div class="qa-a">In a real content moderation system, a high FPR means innocent posts get flagged and removed. If this happens disproportionately for religious content, the system effectively censors religious discourse — a civil liberties concern. In Pakistan's social media context, this would disproportionately affect religious speech by minority communities.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Why study fairness in a cross-lingual transfer setting?</div>
+    <div class="qa-a">Biases present in the source-language (English) training data can transfer to the target language. A model that learned "religious words = hate" from English data will apply that spurious correlation to Roman Urdu text, even though the cultural context is completely different.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 3 — DATASET
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 3</div>
+  <div class="slide-title">Dataset Description</div>
+
+  <h3>English Source: Davidson et al. (2017)</h3>
+  <p>Originally a 3-class dataset: <em>hate speech</em>, <em>offensive language</em>, and <em>neither</em>. We <strong>binarise</strong> it: hate speech = 1, everything else = 0. This gives us 21,159 training samples with only <strong>5.2% hate</strong> — a highly imbalanced dataset.</p>
+  <div class="box box-concept">
+    <strong>Why binarise?</strong> The boundary between "offensive" and "hate speech" is subjective and annotators disagreed frequently. Collapsing to a binary task reduces annotation noise and makes the cross-lingual comparison cleaner.
+  </div>
+
+  <h3>Roman Urdu Target: community-datasets/roman_urdu_hate_speech</h3>
+  <p>Collected from Pakistani social media. Contains <strong>7,208 training samples</strong> and <strong>800 development samples</strong>. Crucially, <strong>53.5% are hate</strong> — nearly balanced. This is very different from English (5.2% hate), and this mismatch is the root cause of the few-shot collapse problem.</p>
+
+  <h3>Why the imbalance mismatch matters</h3>
+  <div class="box box-warn">
+    When we train on English data with class weight w_hate = 8.0 (to handle the severe 5.2% minority), we are calibrating the model for a very skewed distribution. When we then fine-tune on balanced Urdu data (53.5% hate), the class weights become inappropriate and the model's loss landscape changes fundamentally — the easiest minimum is "predict everything as hate."
+  </div>
+
+  <h3>Key metrics explained</h3>
+  <table>
+    <tr><th>Metric</th><th>Formula</th><th>What it measures</th></tr>
+    <tr><td><strong>Hate F1</strong></td><td>2 × P × R / (P + R)</td><td>Balance of precision and recall for hate class specifically</td></tr>
+    <tr><td><strong>Macro F1</strong></td><td>(F1_hate + F1_nonhate) / 2</td><td>Average F1 across both classes — penalises class imbalance</td></tr>
+    <tr><td><strong>FPR</strong></td><td>FP / (FP + TN)</td><td>Rate of false alarms — how often safe content is misclassified</td></tr>
+  </table>
+
+  <div class="qa-item">
+    <div class="qa-q">Why use Macro F1 as the primary metric instead of accuracy?</div>
+    <div class="qa-a">In hate speech detection, a model that says "not hate" for every sample gets 94.8% accuracy on our English data but catches zero hate speech — completely useless. Macro F1 is the harmonic mean of precision and recall averaged across both classes, so it punishes the model for ignoring either class. A model that predicts all non-hate gets Macro F1 ≈ 0.5 (good F1 on non-hate class, zero on hate class, average = 0.5 approximately). A collapsed all-hate model gets Macro F1 ≈ 0.35 because non-hate F1 drops to zero.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How was the Roman Urdu dataset annotated?</div>
+    <div class="qa-a">The dataset was manually annotated by human annotators familiar with Roman Urdu and Pakistani social media culture. Annotation of Roman Urdu is especially challenging because the same phrase can be hateful or playful depending on context, and spelling variation means annotators may not recognise words they see for the first time. The dataset has known inter-annotator disagreement, which is reflected in some ambiguous samples remaining in the test set.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 4 — METHODOLOGY
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 4</div>
+  <div class="slide-title">Methodology</div>
+
+  <h3>The Three Models</h3>
+  <table>
+    <tr><th>Model</th><th>Params</th><th>Tokenizer</th><th>Pre-training data</th><th>Languages</th></tr>
+    <tr><td>mBERT</td><td>179M</td><td>WordPiece, 119K vocab</td><td>Wikipedia (~10GB)</td><td>104</td></tr>
+    <tr><td>XLM-R-base</td><td>278M</td><td>SentencePiece BPE, 250K vocab</td><td>CommonCrawl (2.5TB)</td><td>100</td></tr>
+    <tr class="hl"><td>XLM-R-large</td><td>560M</td><td>SentencePiece BPE, 250K vocab</td><td>CommonCrawl (2.5TB)</td><td>100</td></tr>
+  </table>
+
+  <div class="box box-key">
+    <strong>Why XLM-R &gt; mBERT for low-resource transfer?</strong><br>
+    (1) 250K vs 119K vocabulary — more subword coverage for rare languages.<br>
+    (2) CommonCrawl (web text) vs Wikipedia — web text contains informal language, slang, and non-standard spelling that is more representative of social media.<br>
+    (3) Temperature-based language sampling in training oversamples low-resource languages, giving them more representation in the model's weights.
+  </div>
+
+  <h3>English Fine-Tuning (Phase 1)</h3>
+  <p>We fine-tune all three models on the English Davidson dataset using the HuggingFace <code>Trainer</code>. Key hyperparameters:</p>
+  <ul>
+    <li><strong>Class-weighted loss w = [1.0, 8.0]</strong>: missing a hate sample costs 8× more than missing a non-hate sample. Forces the model to learn hate speech features despite the 5.2% imbalance.</li>
+    <li><strong>Learning rate 1×10⁻⁵</strong>: very small to preserve pre-trained multilingual representations. Large updates would destroy the cross-lingual alignment.</li>
+    <li><strong>fp16 (half precision)</strong>: halves VRAM usage (560M × 2 bytes = 1.12GB instead of 2.24GB). Requires AMP loss scaling to prevent gradient underflow.</li>
+    <li><strong>Gradient checkpointing</strong>: trades 30% speed for 30% less memory by recomputing activations during backprop instead of storing them.</li>
+  </ul>
+
+  <h3>Zero-Shot Evaluation (Phase 2)</h3>
+  <p>The English checkpoint is applied directly to the Roman Urdu dev set. No Roman Urdu data used. Result: Hate F1 &lt; 0.07. The model learned English-specific hate patterns that do not generalise to Roman Urdu vocabulary and structure.</p>
+
+  <h3>Standard K-Shot Fine-Tuning (Phase 3)</h3>
+  <p>K stratified Roman Urdu samples (equal hate/non-hate) are used to continue training the English checkpoint. A new 2-neuron classification head is randomly initialised on top of the transformer. Problem: at K ≤ 32, the model collapses to predicting everything as hate even with balanced weights [1.0, 1.0].</p>
+  <div class="box box-math">Why collapse happens (the math):
+Urdu data: 53.5% hate, 46.5% non-hate
+K=8 batch: 4 hate, 4 non-hate, w = [1.0, 1.0]
+
+Predict all-hate:    4 hate right (loss=0) + 4 non-hate wrong (loss = 4 × large)
+Predict all-non-hate: 4 hate wrong (loss = 4 × large) + 4 non-hate right (loss=0)
+
+Both strategies have equal loss → gradient descent finds a degenerate minimum.
+The randomly-initialised head produces noisy gradients that reach this minimum
+in the first few steps, before discriminative features can be learned.</div>
+
+  <h3>Prompt-Based Fine-Tuning (Phase 3, alternative)</h3>
+  <p>Instead of a random classification head, we use the <strong>pre-trained MLM head</strong> which already knows how to predict masked words:</p>
+  <div class="box box-math">Template: "{tweet} This text is [MASK]."
+Verbalizer:
+  HATE class    → {"hate", "bad", "wrong", "vile", "terrible"}
+  NON-HATE class → {"normal", "fine", "okay", "good"}
+
+p(HATE) = log-sum-exp of MLM log-probabilities over hate tokens
+Loss = CrossEntropy(p(HATE), p(NON-HATE), true_label)</div>
+  <div class="box box-key">
+    <strong>Why this avoids collapse:</strong> The MLM head already assigns higher probability to "hate" for hateful content even before any Urdu training. The gradient signal is meaningful from step 1 — no random-init problem. At K=64 this gives Macro F1 = 0.745 vs 0.528 for standard fine-tuning.
+  </div>
+
+  <h3>Classical ML Baseline</h3>
+  <ul>
+    <li><strong>TF-IDF</strong>: character n-grams (1–3) weighted by term frequency × inverse document frequency. A word that appears in many hate documents but few non-hate documents gets high weight. Handles Roman Urdu's spelling variation at the character level.</li>
+    <li><strong>FuzzyWuzzy</strong>: computes fuzzy string similarity (0–100) between each tweet and a set of prototype hate phrases. Handles the fact that "kafir" and "kaafir" and "kafer" all mean the same thing.</li>
+    <li><strong>Logistic Regression</strong>: fast, interpretable, excellent for high-dimensional sparse TF-IDF features.</li>
+  </ul>
+
+  <div class="qa-item">
+    <div class="qa-q">Why is classical ML competitive with deep learning here?</div>
+    <div class="qa-a">Roman Urdu hate speech is highly lexical — specific words and phrases (slurs, derogatory terms) recur consistently across hate samples. TF-IDF directly captures this: rare hate-specific vocabulary gets high weight. With 7,208 training samples, the vocabulary is well-covered. Deep learning's advantage (understanding context and semantics) matters less when the classification signal is this lexically strong.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is gradient accumulation and why was it needed?</div>
+    <div class="qa-a">Our GPU (RTX 4070, 8.6GB VRAM) cannot fit a large batch of XLM-R-large samples at once. Gradient accumulation runs 4 small batches of 8 samples each, accumulates the gradients without updating weights, then performs one update — equivalent to a single batch of 32 samples. This gives the model more stable gradient estimates while staying within the memory limit.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is the log-sum-exp operation in the prompt-based approach?</div>
+    <div class="qa-a">The MLM head produces one log-probability for every token in the vocabulary. For the HATE class, we have 5 verbalizer words. We want to combine their probabilities into a single class probability. Since we are in log-space, summing probabilities requires log(sum(exp(log_p))) — this is numerically stable (avoids overflow) and correctly adds probabilities. It is equivalent to: the total probability of seeing any one of the hate words at the [MASK] position.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 5 — RESULTS
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 5</div>
+  <div class="slide-title">Results &amp; Comparison with Baselines</div>
+
+  <h3>Full Results Table</h3>
+  <table>
+    <tr><th>Method</th><th>K</th><th>Hate F1</th><th>Macro F1</th><th>FPR</th></tr>
+    <tr><td>XLM-R-large (EN dev, no Urdu)</td><td>—</td><td>0.509</td><td>0.740</td><td>0.030</td></tr>
+    <tr><td>Zero-shot (XLM-R-large)</td><td>0</td><td>0.005</td><td>0.319</td><td>0.003</td></tr>
+    <tr><td>Standard fine-tuning</td><td>8</td><td>0.697</td><td>0.350</td><td>0.998</td></tr>
+    <tr><td>Prompt-based fine-tuning</td><td>8</td><td>0.690</td><td>0.474</td><td>0.801</td></tr>
+    <tr><td>Standard fine-tuning</td><td>32</td><td>0.697</td><td>0.349</td><td>1.000</td></tr>
+    <tr><td>Prompt-based fine-tuning</td><td>32</td><td>0.737</td><td>0.634</td><td>0.550</td></tr>
+    <tr><td>Standard fine-tuning</td><td>64</td><td>0.715</td><td>0.528</td><td>0.777</td></tr>
+    <tr class="hl"><td>Prompt-based fine-tuning</td><td>64</td><td>0.787</td><td>0.745</td><td>0.355</td></tr>
+    <tr><td>TF-IDF + FuzzyWuzzy + LR</td><td>all</td><td>0.857</td><td>0.841</td><td>0.207</td></tr>
+    <tr class="hl"><td>XLM-R-large supervised</td><td>all</td><td>0.895</td><td>0.885</td><td>0.140</td></tr>
+  </table>
+
+  <h3>Reading the numbers</h3>
+  <ul>
+    <li><strong>Zero-shot Hate F1 = 0.005</strong>: the model catches almost no hate speech. It learned English hate signals that simply do not appear in Roman Urdu text.</li>
+    <li><strong>Standard FT Macro F1 = 0.349 at K=32</strong>: Macro F1 below 0.5 means the model has completely failed one class. FPR = 1.000 confirms it predicts everything as hate — Hate F1 is high only because the model always guesses hate.</li>
+    <li><strong>Prompt FT Macro F1 = 0.745 at K=64</strong>: both classes are handled well. FPR = 0.355 means 35.5% of safe content is still wrongly flagged — not perfect but dramatically better than standard FT.</li>
+    <li><strong>Classical ML Macro F1 = 0.841</strong>: outperforms all few-shot neural methods using simple word features and sufficient data.</li>
+    <li><strong>Supervised Hate F1 = 0.895</strong>: this is the upper bound — what you get when you have all 7,208 Urdu labels. Everything below this is the price of limited labelled data.</li>
+  </ul>
+
+  <div class="qa-item">
+    <div class="qa-q">Standard FT Hate F1 at K=8 is 0.697 — why is it high if the model is collapsing?</div>
+    <div class="qa-a">When the model predicts everything as hate, it catches 100% of actual hate (Recall = 1.0) but also flags everything safe as hate (FPR = 1.0). Because the Urdu dataset is 53.5% hate, predicting all-hate gives Hate F1 ≈ 0.697 (since precision = 53.5% and recall = 100%). This looks good in isolation but the model is useless — it cannot distinguish anything. Macro F1 = 0.350 reveals the truth: non-hate F1 is near zero.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Why does prompt-based FT perform worse than standard FT on Hate F1 at K=8, but better on Macro F1?</div>
+    <div class="qa-a">Standard FT at K=8 has Hate F1 = 0.697 because it predicts everything as hate (high recall, low precision). Prompt-based at K=8 has Hate F1 = 0.690 but much better Macro F1 = 0.474 because it correctly identifies some non-hate samples too (FPR drops from 0.998 to 0.801). Prompt-based is making real predictions, not just defaulting to hate. As K increases, the prompt-based advantage compounds.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">If classical ML beats neural few-shot, what is the point of prompt-based fine-tuning?</div>
+    <div class="qa-a">Classical ML requires the full training set (7,208 samples) and does not generalise beyond its training vocabulary. Prompt-based fine-tuning achieves Macro F1 = 0.745 with only 64 labelled samples — a 113× reduction in annotation cost. In a real deployment scenario where you have very few labelled examples, prompt-based FT is the practical choice. Classical ML is the upper bound for the full-data setting, not a realistic comparison for the few-shot problem.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SLIDE 6 — KEY FINDINGS
+═══════════════════════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-label">Slide 6</div>
+  <div class="slide-title">Key Findings</div>
+
+  <h3>Finding 1: Zero-shot fails — negative transfer</h3>
+  <p>All three models fail zero-shot (Hate F1 &lt; 0.07). XLM-R-large fails most severely (0.005), despite being the best model on English. Strong English fine-tuning creates a tight English-specific decision boundary that generalises poorly to Urdu vocabulary. This is <strong>negative transfer</strong>: more training on the source task hurts target performance.</p>
+
+  <h3>Finding 2: Standard few-shot collapses</h3>
+  <p>With K ≤ 32, standard fine-tuning always predicts hate regardless of the input. With balanced weights, both "predict all-hate" and "predict all-non-hate" produce equal loss, so the randomly-initialised classification head's noisy gradients determine which degenerate solution is reached. With K=64 and balanced data, partial learning occurs but FPR remains 0.777 — too high for deployment.</p>
+
+  <h3>Finding 3: Prompt-based FT is the best few-shot method</h3>
+  <p>By leveraging the pre-trained MLM head (which already understands semantics), prompt-based FT avoids the random-init problem. At K=32, Macro F1 improves from 0.349 to 0.634 — a dramatic +0.285 improvement with the same 32 labelled samples. At K=64, Macro F1 = 0.745, competitive with much larger labelled datasets.</p>
+
+  <h3>Finding 4: Classical ML outperforms few-shot neural on full data</h3>
+  <p>TF-IDF + FuzzyWuzzy + LR achieves Hate F1 = 0.857, beating all few-shot transformer methods. This shows that Roman Urdu hate speech is highly lexical — specific vocabulary is a strong signal. The lesson: when you have sufficient labelled data, simple interpretable models can be surprisingly competitive, especially for lexically-distinctive classification tasks.</p>
+
+  <h3>Finding 5: Fairness — religious text is disproportionately flagged</h3>
+  <p>FPR for religion-mentioning text = 0.143 vs 0.027 overall (5.3× higher). Religious vocabulary in the English Davidson dataset co-occurs with hate speech (e.g., anti-religion hate). The model learned "religious words = hate signal." In Roman Urdu, religious speech is predominantly devotional and non-hateful, creating systematic false positives. This is a <strong>spurious correlation</strong> that transferred cross-lingually.</p>
+
+  <div class="qa-item">
+    <div class="qa-q">What would you do differently if you had more time/compute?</div>
+    <div class="qa-a">Several directions: (1) Use larger K values (128, 256) to see when prompt-based FT catches up with classical ML. (2) Try multilingual LLMs (mT5, BLOOM) which may have better Roman Urdu coverage. (3) Apply data augmentation — back-translation or paraphrasing to increase effective sample size. (4) Address the fairness issue directly with group-conditional regularisation. (5) Fine-tune on Roman Urdu orthographic variants (standardise spelling before tokenising).</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How would this system be deployed in practice?</div>
+    <div class="qa-a">In a content moderation pipeline: (1) Run the classifier on incoming posts in real time. (2) Posts above a confidence threshold go to a human reviewer queue. (3) The few-shot prompt-based model would be used in early deployment when labels are scarce; replaced by the supervised model once enough labels accumulate. The fairness analysis would be repeated periodically to monitor for demographic disparities.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is the significance of FPR = 0.003 for zero-shot?</div>
+    <div class="qa-a">An extremely low FPR with almost zero Hate F1 means the model almost never predicts hate — it defaults to predicting everything as non-hate. This is the opposite collapse: the model is too conservative. The English fine-tuning made it very good at recognising English hate signals, and since Roman Urdu text has essentially none of those signals, the model never triggers. Negative transfer in action.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">Is this work generalisable to other low-resource languages?</div>
+    <div class="qa-a">Yes — the methodology is language-agnostic. The prompt-based approach and the few-shot experimental design apply to any low-resource language where a small number of hate speech labels can be obtained. The specific finding about class distribution mismatch (5.2% vs 53.5%) would differ for other language pairs, but the general lesson about calibrating class weights for the target distribution applies universally.</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════════
+     MASTER Q&A
+═══════════════════════════════════════════════════════════ -->
+<div class="qa-section">
+  <h2 style="border:none; padding:0; margin-top:0">Master Q&amp;A — Likely Examiner Questions</h2>
+  <p style="color:#666; font-size:.9rem; margin-bottom:1rem">These questions have come up in similar NLP/deep learning presentations. Know these cold.</p>
+
+  <div class="qa-item">
+    <div class="qa-q">What is SentencePiece BPE and why does it matter for Roman Urdu?</div>
+    <div class="qa-a">SentencePiece Byte-Pair Encoding starts with individual characters and iteratively merges the most frequent adjacent pairs into new tokens. With a 250K vocabulary trained on web text, it creates subword pieces that can handle unknown or misspelled words by decomposing them into known subpieces. For Roman Urdu, this means "bure", "bura", "boora" are all broken into overlapping subwords that share representations, giving the model robustness to spelling variation.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is the difference between pre-training and fine-tuning?</div>
+    <div class="qa-a">Pre-training: training from random weights on massive unlabelled text using self-supervised objectives (predicting masked words). Done once by large research labs (Meta, Google) — takes weeks on hundreds of GPUs. Fine-tuning: starting from pre-trained weights and continuing training on labelled task data. Done by us — takes minutes to hours on a single GPU. Fine-tuning requires far less data because the model already knows language; it just needs to learn the task-specific mapping.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is Masked Language Modelling (MLM)?</div>
+    <div class="qa-a">MLM is XLM-R's pre-training objective. During pre-training, 15% of tokens in each sentence are masked (replaced with [MASK]). The model must predict what the original token was, based on the surrounding context. This forces the model to learn deep bidirectional contextual representations of language — it must understand the whole sentence to predict one word. This is why the pre-trained MLM head is useful for prompt-based fine-tuning: it already understands word semantics in context.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How did you choose the verbalizer words for prompt-based FT?</div>
+    <div class="qa-a">We followed Ullah et al. (2025), who validated these specific words for hate speech sentiment analysis. We additionally verified that each word is a single SentencePiece token in the XLM-R vocabulary (not split into subwords) — this matters because we read probabilities at the [MASK] position for a single token. Words that get split into multiple tokens would require more complex aggregation. We verified: "hate", "bad", "wrong", "vile", "terrible", "normal", "fine", "okay", "good" are all single tokens.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">How did you ensure fair comparison between few-shot methods?</div>
+    <div class="qa-a">Both standard fine-tuning and prompt-based fine-tuning use exactly the same stratified K-shot splits, fixed with random seed 0/1/2. Results are mean ± std across 3 seeds. The English checkpoint used as the starting point is identical for both methods. This ensures any performance difference is due to the training method, not lucky/unlucky data selection.</div>
+  </div>
+  <div class="qa-item">
+    <div class="qa-q">What is temperature-based language sampling in XLM-R pre-training?</div>
+    <div class="qa-a">Without adjustment, training data would be sampled proportional to corpus size — English (dominant on the web) would be 80%+ of all training data, leaving tiny languages like Urdu with almost no representation. Temperature sampling with T=0.7 upsamples low-resource languages by sampling proportional to corpus_size^(1/T). This gives languages like Urdu ~3–5× more training examples than naive proportional sampling would allow, significantly improving their representation in the model.</div>
+  </div>
+</div>
+
+<hr class="divider">
+<p style="text-align:center; color:#888; font-size:.83rem">
+  AI-600 Deep Learning · LUMS Spring 2026 · Muteeullah Baig &amp; Rana Muhammad Hamza<br>
+  Presenter Reference Guide — for deep understanding and Q&amp;A preparation
+</p>
+</body>
+</html>

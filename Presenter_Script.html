@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presenter Script — Cross-Lingual Hate Speech Detection</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #1a1a2e;
+    background: #f8f9fc;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+
+  .cover {
+    background: linear-gradient(135deg, #1E2761 0%, #2d3a8c 100%);
+    color: white; border-radius: 14px; padding: 2rem 2rem; margin-bottom: 1.8rem;
+  }
+  .cover h1 { color: white; font-size: 1.7rem; font-weight: 800; }
+  .cover .sub { color: #FDE68A; font-size: .95rem; margin-top: .3rem; }
+  .cover .meta { margin-top: 1rem; font-size: .85rem; color: #C4A252; }
+
+  .slide-block {
+    background: white; border-radius: 12px; padding: 0;
+    margin-bottom: 1.4rem; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .slide-header {
+    background: #1E2761; color: white;
+    padding: .9rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+  }
+  .slide-name { font-size: 1.05rem; font-weight: 700; }
+  .slide-time {
+    background: #F5A623; color: #1E2761;
+    font-size: .8rem; font-weight: 700; padding: .2rem .7rem;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .slide-body { padding: 1.5rem 1.7rem; }
+
+  .cue {
+    display: inline-block; font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .07em;
+    padding: .15rem .55rem; border-radius: 4px; margin: 1rem 0 .3rem;
+  }
+  .cue-say    { background: #e8f5e9; color: #1b5e20; }
+  .cue-point  { background: #e3f2fd; color: #0d47a1; }
+  .cue-pause  { background: #fff3e0; color: #e65100; }
+  .cue-note   { background: #f3e5f5; color: #4a235a; }
+
+  .script {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #212529;
+    padding: .4rem 0;
+    border-left: 3px solid #F5A623;
+    padding-left: .95rem;
+    margin-bottom: .6rem;
+  }
+  .script em {
+    color: #1E2761;
+    font-style: normal;
+    font-weight: 600;
+  }
+  .script .soft { color: #888; font-size: .9em; }
+
+  .point-text {
+    font-size: 13px; color: #0d47a1; background: #e3f2fd;
+    border-radius: 6px; padding: .4rem .8rem; margin: .3rem 0;
+    font-style: italic;
+  }
+
+  .transition {
+    background: #FEF3C7; border-left: 3px solid #F5A623;
+    padding: .5rem .9rem; font-size: 13px; color: #92400E;
+    font-weight: 600; border-radius: 0 6px 6px 0; margin-top: .8rem;
+  }
+
+  .tip {
+    background: #f3e5f5; border-radius: 6px;
+    padding: .5rem .9rem; font-size: 12.5px; color: #4a235a;
+    margin-top: .5rem;
+  }
+  .tip::before { content: "TIP: "; font-weight: 700; }
+
+  .timing-bar {
+    background: #f0f4ff; border-radius: 8px; padding: .6rem 1rem;
+    margin-bottom: 1.5rem; font-size: .88rem; color: #475569;
+    display: flex; gap: 2rem; flex-wrap: wrap;
+  }
+  .timing-bar span { font-weight: 700; color: #1E2761; }
+
+  hr { border: none; border-top: 2px dashed #dee2e6; margin: 1.5rem 0; }
+
+  @media print {
+    body { background: white; font-size: 12px; padding: 1rem; max-width: 100%; }
+    .slide-block { box-shadow: none; break-inside: avoid; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .slide-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>Presenter Script</h1>
+  <div class="sub">Cross-Lingual Hate Speech Detection: English → Roman Urdu</div>
+  <div class="meta">
+    AI-600 Deep Learning &nbsp;·&nbsp; LUMS Spring 2026 &nbsp;·&nbsp;
+    Muteeullah Baig &amp; Rana Muhammad Hamza<br>
+    <strong style="color:#FDE68A">Word-for-word speaking guide · Print and hold during presentation</strong>
+  </div>
+</div>
+
+<div class="timing-bar">
+  <div>Total time: <span>10 minutes</span></div>
+  <div>Slides: <span>1 title + 5 content</span></div>
+  <div>Q&amp;A: <span>10 minutes after</span></div>
+  <div>Presenter A: <span>Slides 1–3</span></div>
+  <div>Presenter B: <span>Slides 4–6</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — TITLE
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 1 &nbsp;·&nbsp; Title &nbsp;·&nbsp; Presenter A</div>
+    <div class="slide-time">~30 seconds</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-say">Say</div>
+    <div class="script">
+      Good [morning / afternoon]. We are Muteeullah Baig and Rana Muhammad Hamza,
+      and this is our final project for AI-600 Deep Learning at LUMS.
+    </div>
+
+    <div class="cue cue-say">Say</div>
+    <div class="script">
+      Our project is about <em>cross-lingual hate speech detection</em> —
+      specifically, can we train a model on English hate speech data and have it
+      automatically work on <em>Roman Urdu</em>, without needing thousands
+      of labelled Roman Urdu examples?
+    </div>
+
+    <div class="cue cue-say">Say</div>
+    <div class="script">
+      Let me start by explaining what Roman Urdu is and why this is a hard problem.
+    </div>
+
+    <div class="transition">Move to Slide 2</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — PROBLEM STATEMENT
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 2 &nbsp;·&nbsp; Problem Statement &nbsp;·&nbsp; Presenter A</div>
+    <div class="slide-time">~2 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-say">Say — Why Roman Urdu</div>
+    <div class="script">
+      Roman Urdu is Urdu written using English letters — it is how most Pakistanis
+      type informally on social media. It has <em>no standard spelling</em>,
+      no grammar rules, and mixes English and Urdu words freely.
+      Hate speech detection systems are almost entirely built for English.
+      They are blind to hate speech in Roman Urdu.
+    </div>
+
+    <div class="cue cue-point">Point to the three bullet points</div>
+    <div class="point-text">Point at each bullet as you mention it</div>
+
+    <div class="cue cue-say">Say</div>
+    <div class="script">
+      There are three core challenges. First, hate speech tools are almost
+      non-existent for Roman Urdu. Second, the spelling varies so much that
+      the same word might be written ten different ways. And third, the cultural
+      references and insults used in Roman Urdu hate speech simply do not appear
+      in English training data.
+    </div>
+
+    <div class="cue cue-say">Say — Research Questions</div>
+    <div class="script">
+      So we structured our work around four research questions.
+    </div>
+
+    <div class="cue cue-point">Point to RQ1</div>
+    <div class="script">
+      <em>RQ1</em>: Does a larger model transfer better? We tested three models —
+      mBERT, XLM-R-base, and XLM-R-large — of increasing size.
+    </div>
+
+    <div class="cue cue-point">Point to RQ2</div>
+    <div class="script">
+      <em>RQ2</em>: Can a model trained only on English detect Roman Urdu hate speech
+      with no Urdu examples at all? This is called zero-shot transfer.
+    </div>
+
+    <div class="cue cue-point">Point to RQ3</div>
+    <div class="script">
+      <em>RQ3</em>: If we give the model just a handful of Urdu examples —
+      say 8 or 64 — does it improve? And does prompt-based fine-tuning
+      work better than standard fine-tuning?
+    </div>
+
+    <div class="cue cue-point">Point to RQ4</div>
+    <div class="script">
+      And <em>RQ4</em>: Does the model treat all types of content fairly?
+      Or does it flag certain topics — like religion or gender —
+      as hate speech more often than others?
+    </div>
+
+    <div class="tip">If asked "what is zero-shot?": Zero-shot means we apply the model to a new language without giving it any examples from that language. It has to use only what it learned from English.</div>
+
+    <div class="transition">Move to Slide 3</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 3 — DATASET
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 3 &nbsp;·&nbsp; Dataset Description &nbsp;·&nbsp; Presenter A</div>
+    <div class="slide-time">~1.5 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-point">Point to the English (source) card</div>
+    <div class="cue cue-say">Say — English dataset</div>
+    <div class="script">
+      For our source language, we used the Davidson et al. 2017 English hate speech dataset,
+      loaded from HuggingFace. It contains about <em>21,000 training samples</em>,
+      but only <em>5.2% of them are labelled as hate speech</em>.
+      This severe class imbalance is an important problem we had to handle during training.
+    </div>
+
+    <div class="cue cue-point">Point to the Roman Urdu (target) card</div>
+    <div class="cue cue-say">Say — Roman Urdu dataset</div>
+    <div class="script">
+      For our target language, we used the Roman Urdu hate speech dataset,
+      also from HuggingFace. It has about <em>7,200 training samples</em> — but here,
+      <em>53.5% are hate speech</em>. So the two datasets have completely opposite
+      class distributions.
+    </div>
+
+    <div class="cue cue-say">Say — the key challenge</div>
+    <div class="script">
+      This mismatch — 5.2% hate in English versus 53.5% hate in Roman Urdu —
+      is the single most important factor in our results.
+      When we calibrate our model for the very skewed English data and then
+      apply it to the balanced Urdu data, the model breaks down.
+      It no longer knows what the "typical" proportion of hate speech should be,
+      and it starts predicting everything as hate.
+      This is what we call <em>few-shot collapse</em>, which I will explain more on the next slide.
+    </div>
+
+    <div class="tip">If asked "why not collect more Urdu data?": That is actually the whole point of transfer learning — collecting and labelling hate speech data is expensive, legally sensitive, and exposes annotators to harmful content. We want to minimise how much labelled data we need.</div>
+
+    <div class="transition">Move to Slide 4 — Presenter B takes over</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 4 — METHODOLOGY
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 4 &nbsp;·&nbsp; Methodology &nbsp;·&nbsp; Presenter B</div>
+    <div class="slide-time">~2.5 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-say">Say — Models</div>
+    <div class="script">
+      We tested three multilingual transformer models, all pre-trained on text
+      from 100 languages. The smallest is <em>mBERT</em>, our baseline.
+      Then <em>XLM-R-base</em> for ablation. And our primary model is <em>XLM-R-large</em>
+      with 560 million parameters — the largest and most powerful.
+      All three were pre-trained by Meta or Google on hundreds of gigabytes of web text,
+      so they already understand language. We just need to teach them our specific task.
+    </div>
+
+    <div class="cue cue-point">Point to the Transfer Protocols section</div>
+    <div class="cue cue-say">Say — Zero-shot</div>
+    <div class="script">
+      Our first protocol is <em>zero-shot transfer</em>: we train on English,
+      then directly test on Roman Urdu with no Urdu examples at all.
+      This completely fails — Hate F1 below 0.07 across all models.
+    </div>
+
+    <div class="cue cue-say">Say — Standard few-shot</div>
+    <div class="script">
+      Our second protocol is <em>standard few-shot fine-tuning</em>:
+      we take the English checkpoint and continue training it with
+      K labelled Urdu examples — 8, 16, 32, or 64.
+      The problem is that this collapses: the model predicts everything as hate.
+      It gets a high hate recall, but it also flags every safe post as hate.
+      The root cause is that we are adding a randomly-initialised classification head
+      on top of the model, and with so few examples, the noisy gradients push the
+      model to the easiest solution — just always predict hate.
+    </div>
+
+    <div class="cue cue-say">Say — Prompt-based</div>
+    <div class="script">
+      Our third protocol — and our main contribution — is <em>prompt-based fine-tuning</em>.
+      Instead of a random classification head, we reframe the task as
+      fill-in-the-blank. We append the sentence
+      "This text is [MASK]" to every tweet, and we ask the model to predict
+      what word goes in the blank. If it predicts words like "hate", "bad", or "vile",
+      we classify it as hate. If it predicts "normal", "fine", or "okay", it is safe.
+      The key insight is that the model already knows what these words mean —
+      it has seen them millions of times during pre-training.
+      So the gradient signal is meaningful from the very first step,
+      and the model does not collapse.
+    </div>
+
+    <div class="cue cue-point">Point to the Classical ML section</div>
+    <div class="cue cue-say">Say — Classical ML</div>
+    <div class="script">
+      We also ran a classical machine learning baseline using the full Urdu training set.
+      We extracted TF-IDF features — which weight words by how distinctive they are
+      for hate speech — combined with FuzzyWuzzy similarity scores that handle
+      Roman Urdu's spelling variation. These features were fed into a Logistic Regression classifier.
+    </div>
+
+    <div class="tip">If asked about gradient checkpointing: It is a memory-saving technique. Instead of storing all intermediate computations during the forward pass, we recompute them during backpropagation. It uses 30% less memory at the cost of being 30% slower.</div>
+
+    <div class="transition">Move to Slide 5</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 5 — RESULTS
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 5 &nbsp;·&nbsp; Results &nbsp;·&nbsp; Presenter B</div>
+    <div class="slide-time">~2 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-say">Say — introduce the table</div>
+    <div class="script">
+      Here are our results on the Roman Urdu development set.
+      The three main metrics are <em>Hate F1</em> — how well we catch hate speech —
+      <em>Macro F1</em> — the average F1 across both classes, which penalises
+      ignoring either class — and <em>FPR</em>, the false positive rate,
+      which tells us how often safe content is wrongly flagged.
+    </div>
+
+    <div class="cue cue-point">Point to zero-shot row</div>
+    <div class="script">
+      Zero-shot: Hate F1 below 0.07. Complete failure.
+      The model catches almost nothing.
+    </div>
+
+    <div class="cue cue-point">Point to standard FT row</div>
+    <div class="script">
+      Standard fine-tuning at K equals 64: Hate F1 is 0.715,
+      which looks reasonable, but the FPR is 0.777 —
+      meaning <em>77% of safe content is being falsely flagged as hate</em>.
+      The model is essentially predicting hate for almost everything.
+      Macro F1 of 0.528 confirms this — it is not handling both classes well.
+    </div>
+
+    <div class="cue cue-point">Point to prompt-based row — pause briefly</div>
+    <div class="cue cue-say">Say</div>
+    <div class="script">
+      Prompt-based fine-tuning at K equals 64: Hate F1 rises to 0.787,
+      but more importantly, <em>Macro F1 jumps to 0.745</em> and FPR drops to 0.355.
+      The model is now making real predictions, not just defaulting to hate.
+      This is a fundamentally different behaviour with the same 64 labelled samples.
+    </div>
+
+    <div class="cue cue-point">Point to classical ML and supervised rows</div>
+    <div class="script">
+      When we have the full Urdu training set, the classical ML baseline reaches
+      Hate F1 of 0.857 — outperforming all our few-shot neural methods.
+      And the fully supervised XLM-R-large, trained on all 7,200 Urdu samples,
+      achieves our best result: <em>Hate F1 = 0.895</em>, Macro F1 = 0.885.
+      This is our upper bound — what is possible with full labelled data.
+    </div>
+
+    <div class="tip">Key talking point: emphasise that prompt-based FT achieves 0.745 Macro F1 with only 64 examples. The classical ML baseline needs 7,208 examples to beat it — that is a 113x reduction in labelling cost.</div>
+
+    <div class="transition">Move to Slide 6</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 6 — KEY FINDINGS
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Slide 6 &nbsp;·&nbsp; Key Findings &nbsp;·&nbsp; Presenter B</div>
+    <div class="slide-time">~2 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-say">Say — introduce</div>
+    <div class="script">
+      Let me summarise our five key findings.
+    </div>
+
+    <div class="cue cue-point">Point to Finding 1</div>
+    <div class="script">
+      <em>First</em>: zero-shot transfer completely fails, and interestingly,
+      the largest model fails the most. XLM-R-large, our best model on English,
+      scores nearly zero on Roman Urdu zero-shot. Stronger English training
+      creates a tighter English-specific decision boundary that does not generalise.
+      This is called negative transfer.
+    </div>
+
+    <div class="cue cue-point">Point to Finding 2</div>
+    <div class="script">
+      <em>Second</em>: standard few-shot fine-tuning collapses to predicting
+      everything as hate, even with balanced class weights.
+      This is not a calibration issue — it is a fundamental problem
+      with randomly-initialised classification heads and very few training samples.
+    </div>
+
+    <div class="cue cue-point">Point to Finding 3</div>
+    <div class="script">
+      <em>Third</em>: prompt-based fine-tuning solves this.
+      By using the pre-trained MLM head and treating classification
+      as a fill-in-the-blank problem, we get meaningful gradient signals
+      from the very first training step. At K equals 32,
+      Macro F1 improves by 0.28 absolute points over standard fine-tuning.
+    </div>
+
+    <div class="cue cue-point">Point to Finding 4</div>
+    <div class="script">
+      <em>Fourth</em>: when labelled data is available,
+      a simple TF-IDF plus FuzzyWuzzy plus Logistic Regression model
+      outperforms our few-shot neural methods. Roman Urdu hate speech
+      has very distinctive vocabulary, so simple word-counting features work extremely well.
+    </div>
+
+    <div class="cue cue-point">Point to Finding 5</div>
+    <div class="script">
+      <em>Fifth</em>: our model is not fair across all content types.
+      Text mentioning religion is falsely flagged as hate speech
+      five times more often than average. This is a bias inherited from the
+      English training data, where religious language co-occurred with hate speech.
+      Any real deployment of this system would need to address this disparity.
+    </div>
+
+    <div class="cue cue-say">Say — closing</div>
+    <div class="script">
+      To summarise the project: cross-lingual transfer for hate speech detection
+      is genuinely hard. Zero-shot fails. Standard few-shot collapses.
+      But prompt-based fine-tuning provides a practical path forward —
+      strong performance with as few as 64 labelled examples.
+      Thank you. We are happy to take your questions.
+    </div>
+
+    <div class="tip">End with a confident pause and smile. Do not say "that is all" or "I think that is it" — end on "Thank you, we are happy to take your questions."</div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ═══════════════════════════════════════════
+     QUICK ANSWERS FOR Q&A
+═══════════════════════════════════════════ -->
+<div class="slide-block">
+  <div class="slide-header">
+    <div class="slide-name">Q&amp;A — Quick Answers (keep these short, 30–40 seconds each)</div>
+    <div class="slide-time">10 minutes</div>
+  </div>
+  <div class="slide-body">
+
+    <div class="cue cue-note">If asked about negative transfer</div>
+    <div class="script">
+      Negative transfer means stronger training on the source task actually hurts target performance.
+      XLM-R-large learned English hate patterns so precisely that it became overly conservative
+      on Roman Urdu — it almost never triggers, giving Hate F1 of just 0.005.
+    </div>
+
+    <div class="cue cue-note">If asked why not translate Roman Urdu to English first</div>
+    <div class="script">
+      Translation is unreliable for Roman Urdu because of non-standard spelling.
+      Google Translate does not handle "kaafir" and "kafir" and "kafer" consistently.
+      Our approach works directly on the raw text.
+    </div>
+
+    <div class="cue cue-note">If asked why Macro F1 and not accuracy</div>
+    <div class="script">
+      A model that predicts everything as non-hate gets 94.8% accuracy on our English data
+      but catches zero hate speech. Macro F1 is the average F1 across both classes —
+      you need to do well on both to score well.
+    </div>
+
+    <div class="cue cue-note">If asked what the verbalizer is</div>
+    <div class="script">
+      It is a mapping from class labels to actual words. For the hate class,
+      we map to words like "hate", "bad", "vile". For non-hate, we map to "normal", "fine", "okay".
+      We look at the model's probability for each of these words at the mask position
+      and use that to make the classification decision.
+    </div>
+
+    <div class="cue cue-note">If asked what would you do differently</div>
+    <div class="script">
+      We would explore larger K values, try multilingual LLMs like mT5,
+      apply spelling normalisation before tokenising Roman Urdu,
+      and address the religious text fairness issue directly with
+      group-conditional training.
+    </div>
+
+    <div class="cue cue-note">If asked why classical ML beats few-shot neural methods</div>
+    <div class="script">
+      Roman Urdu hate speech relies on very specific vocabulary — slurs, derogatory phrases
+      that repeat across samples. TF-IDF directly captures this signal.
+      The classical model also has access to all 7,208 training samples,
+      while our few-shot models use at most 64. That is a 113-to-1 advantage in labelled data.
+    </div>
+
+    <div class="cue cue-note">If asked about the fairness finding</div>
+    <div class="script">
+      In the English training data, religious language frequently appeared in hate speech context.
+      The model learned this as a signal. In Roman Urdu, religious speech is predominantly
+      devotional, so the model generates false alarms 5 times more often for religious content
+      than for general content. This is called a spurious correlation.
+    </div>
+
+  </div>
+</div>
+
+<hr>
+<p style="text-align:center; color:#888; font-size:.82rem">
+  AI-600 Deep Learning &nbsp;·&nbsp; LUMS Spring 2026 &nbsp;·&nbsp;
+  Muteeullah Baig &amp; Rana Muhammad Hamza<br>
+  Presenter Script — print one copy per presenter · highlight your slides
+</p>
+
+</body>
+</html>
