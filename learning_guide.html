@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Lingual Hate Speech Detection — Learning Guide</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #1a1a2e;
+    background: #f8f9fc;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+
+  /* ── Typography ── */
+  h1 { font-size: 2rem; font-weight: 800; color: #1a1a2e; margin-bottom: .3rem; }
+  h2 { font-size: 1.35rem; font-weight: 700; margin: 2rem 0 .8rem; color: #1a1a2e; }
+  h3 { font-size: 1.05rem; font-weight: 700; margin: 1.4rem 0 .5rem; color: #2d2d5e; }
+  p  { margin-bottom: .8rem; }
+  ul, ol { margin: .5rem 0 .8rem 1.5rem; }
+  li { margin-bottom: .3rem; }
+  strong { color: #1a1a2e; }
+  code {
+    font-family: 'Cascadia Code', 'Fira Mono', monospace;
+    font-size: .85em;
+    background: #eef0f8;
+    padding: .1em .35em;
+    border-radius: 4px;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .cover h1 { color: white; font-size: 1.9rem; }
+  .cover .subtitle { color: #a8b4d8; font-size: 1rem; margin-top: .4rem; }
+  .cover .meta { margin-top: 1.5rem; display: flex; gap: 2rem; flex-wrap: wrap; }
+  .cover .meta-item { font-size: .85rem; color: #c0cce8; }
+  .cover .meta-item span { display: block; color: white; font-weight: 600; font-size: .95rem; }
+
+  /* ── Iteration badges ── */
+  .iter-badge {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: .2rem .6rem;
+    border-radius: 20px;
+    margin-bottom: .5rem;
+  }
+  .i1 { background: #d4edda; color: #155724; }
+  .i2 { background: #cce5ff; color: #004085; }
+  .i3 { background: #fff3cd; color: #856404; }
+  .i4 { background: #f8d7da; color: #721c24; }
+  .i5 { background: #e2d9f3; color: #4a235a; }
+
+  /* ── Section cards ── */
+  .section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    border-left: 5px solid #dee2e6;
+  }
+  .section.s1 { border-left-color: #28a745; }
+  .section.s2 { border-left-color: #007bff; }
+  .section.s3 { border-left-color: #ffc107; }
+  .section.s4 { border-left-color: #dc3545; }
+  .section.s5 { border-left-color: #6f42c1; }
+
+  /* ── Callout boxes ── */
+  .box {
+    border-radius: 8px;
+    padding: .9rem 1.1rem;
+    margin: 1rem 0;
+    font-size: .93rem;
+  }
+  .box-concept { background: #e8f4fd; border-left: 4px solid #2196f3; }
+  .box-warn    { background: #fff8e1; border-left: 4px solid #ff9800; }
+  .box-math    { background: #f3e5f5; border-left: 4px solid #9c27b0; font-family: 'Cascadia Code','Fira Mono',monospace; font-size: .88em; white-space: pre-wrap; }
+  .box-key     { background: #e8f5e9; border-left: 4px solid #4caf50; }
+  .box-result  { background: #fce4ec; border-left: 4px solid #e91e63; }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+    font-family: 'Cascadia Code','Fira Mono',monospace;
+    font-size: .83em;
+    line-height: 1.6;
+    margin: .8rem 0 1rem;
+  }
+  .c-comment { color: #6c7086; }
+  .c-keyword { color: #cba6f7; }
+  .c-string  { color: #a6e3a1; }
+  .c-number  { color: #fab387; }
+  .c-fn      { color: #89b4fa; }
+  .c-class   { color: #f9e2af; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
+  th { background: #1a1a2e; color: white; padding: .6rem .9rem; text-align: left; }
+  td { padding: .55rem .9rem; border-bottom: 1px solid #e9ecef; }
+  tr:nth-child(even) td { background: #f8f9fa; }
+  .highlight-row td { background: #fff9c4 !important; font-weight: 600; }
+  .best { color: #28a745; font-weight: 700; }
+  .bad  { color: #dc3545; font-weight: 700; }
+
+  /* ── Visual: Bar chart ── */
+  .bar-wrap { margin: 1rem 0; }
+  .bar-row { display: flex; align-items: center; gap: .6rem; margin-bottom: .45rem; }
+  .bar-label { font-size: .82rem; width: 130px; flex-shrink: 0; text-align: right; color: #555; }
+  .bar-track { flex: 1; background: #eee; border-radius: 20px; height: 26px; position: relative; overflow: visible; }
+  .bar-fill  { height: 100%; border-radius: 20px; display: flex; align-items: center; padding-left: .5rem; font-size: .8rem; font-weight: 600; color: white; min-width: 2.5rem; transition: width .4s; }
+  .bar-nh  { background: #28a745; }
+  .bar-h   { background: #dc3545; }
+  .bar-val { position: absolute; right: -50px; top: 50%; transform: translateY(-50%); font-size: .82rem; font-weight: 600; color: #333; }
+
+  /* ── Visual: Pipeline flow ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin: 1.2rem 0;
+    padding: 1rem;
+    background: #f8f9fc;
+    border-radius: 10px;
+  }
+  .pipe-box {
+    background: white;
+    border: 2px solid #1a1a2e;
+    border-radius: 8px;
+    padding: .5rem .9rem;
+    font-size: .82rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 90px;
+  }
+  .pipe-box.blue  { border-color: #007bff; color: #007bff; }
+  .pipe-box.green { border-color: #28a745; color: #28a745; }
+  .pipe-box.red   { border-color: #dc3545; color: #dc3545; }
+  .pipe-box.purple{ border-color: #6f42c1; color: #6f42c1; }
+  .pipe-arrow { font-size: 1.3rem; color: #888; }
+
+  /* ── Visual: Model size ── */
+  .model-compare { display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap; }
+  .model-card {
+    flex: 1;
+    min-width: 160px;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    background: #f0f4ff;
+    border: 2px solid #c5cff0;
+  }
+  .model-card.best-model { border-color: #ffc107; background: #fffbf0; }
+  .model-card .model-name { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+  .model-card .model-params { font-size: .85rem; color: #555; margin: .3rem 0; }
+  .model-card .model-layers { font-size: .8rem; color: #777; }
+  .model-icon { font-size: 2.2rem; margin-bottom: .3rem; }
+
+  /* ── Visual: Attention grid ── */
+  .attn-grid {
+    display: grid;
+    gap: 3px;
+    margin: .8rem 0;
+    width: fit-content;
+  }
+  .attn-cell {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; font-weight: 600; color: white;
+  }
+  .attn-header {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 700; color: #444;
+    text-align: center;
+  }
+  .attn-row-label {
+    display: flex; align-items: center;
+    font-size: .72rem; font-weight: 700; color: #444; padding-right: 4px;
+  }
+  .attn-wrap { overflow-x: auto; }
+  .attn-caption { font-size: .8rem; color: #666; margin-top: .4rem; font-style: italic; }
+
+  /* ── Visual: Confusion matrix ── */
+  .cm-wrap { display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; margin: 1rem 0; }
+  .cm-grid { display: grid; grid-template-columns: auto auto auto; gap: 4px; }
+  .cm-cell {
+    width: 80px; height: 60px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border-radius: 6px; font-size: .78rem; font-weight: 600;
+  }
+  .cm-tp { background: #c8e6c9; color: #1b5e20; }
+  .cm-tn { background: #c8e6c9; color: #1b5e20; }
+  .cm-fp { background: #ffcdd2; color: #b71c1c; }
+  .cm-fn { background: #ffcdd2; color: #b71c1c; }
+  .cm-label { background: #e8eaf6; color: #283593; font-weight: 700; border-radius: 6px; }
+  .cm-legend { font-size: .83rem; line-height: 2; }
+
+  /* ── Visual: Loss comparison ── */
+  .loss-compare { display: flex; gap: 1.2rem; margin: 1rem 0; flex-wrap: wrap; }
+  .loss-card {
+    flex: 1; min-width: 200px;
+    border-radius: 10px; padding: 1rem 1.1rem;
+    border: 2px solid;
+  }
+  .loss-card.good { border-color: #28a745; background: #f0fff4; }
+  .loss-card.bad-card  { border-color: #dc3545; background: #fff0f0; }
+  .loss-card h4 { font-size: .9rem; margin-bottom: .5rem; }
+  .loss-card .loss-val { font-size: 1.5rem; font-weight: 800; }
+  .loss-card.bad-card .loss-val { color: #dc3545; }
+  .loss-card.good .loss-val { color: #28a745; }
+
+  /* ── Visual: Result bars ── */
+  .result-bar-wrap { margin: 1rem 0; }
+  .result-bar-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .6rem; }
+  .result-bar-label { width: 130px; font-size: .85rem; font-weight: 600; flex-shrink: 0; }
+  .result-bar-track { flex: 1; background: #eee; border-radius: 4px; height: 28px; position: relative; }
+  .result-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: .5rem; font-size: .8rem; font-weight: 700; color: white; }
+  .rb-en   { background: linear-gradient(90deg, #007bff, #4dabf7); }
+  .rb-zs   { background: linear-gradient(90deg, #dc3545, #f86877); }
+  .rb-fs   { background: linear-gradient(90deg, #fd7e14, #ffa94d); }
+
+  /* ── Visual: Fairness chart ── */
+  .fairness-wrap { margin: 1rem 0; }
+  .fairness-row { display: flex; align-items: center; gap: .8rem; margin-bottom: .5rem; }
+  .fairness-label { width: 90px; font-size: .85rem; font-weight: 600; flex-shrink: 0; }
+  .fairness-track { flex: 1; background: #eee; border-radius: 4px; height: 26px; position: relative; }
+  .fairness-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: .5rem; font-size: .8rem; font-weight: 700; color: white; }
+  .f-gender   { background: #17a2b8; }
+  .f-religion { background: #dc3545; }
+  .f-ethnic   { background: #28a745; }
+  .f-overall  { background: #6c757d; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 2px dashed #dee2e6; margin: 2rem 0; }
+
+  /* ── Quick ref ── */
+  .glossary { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: 1rem 0; }
+  .gterm { background: #f8f9fc; border-radius: 8px; padding: .7rem 1rem; font-size: .88rem; }
+  .gterm strong { display: block; color: #1a1a2e; margin-bottom: .2rem; }
+
+  /* ── Print ── */
+  @media print {
+    body { background: white; font-size: 13px; }
+    .section { box-shadow: none; break-inside: avoid; }
+    pre { break-inside: avoid; }
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h2 { page-break-before: always; }
+    h2:first-of-type { page-break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <h1>Cross-Lingual Hate Speech Detection</h1>
+  <div class="subtitle">English → Roman Urdu Transfer Learning — A Complete Learning Guide</div>
+  <div class="meta">
+    <div class="meta-item">Course<span>AI-600 Deep Learning, LUMS</span></div>
+    <div class="meta-item">Authors<span>Muteeullah Baig &amp; Rana Muhammad Hamza</span></div>
+    <div class="meta-item">Models<span>mBERT · XLM-R-base · XLM-R-large</span></div>
+    <div class="meta-item">Structure<span>5 Iterations: Abstract → Maximum Detail</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ HOW TO USE -->
+<div class="section">
+  <h2>How to Use This Guide</h2>
+  <p>This guide teaches the same project five times, each time adding more depth. Start at Iteration 1 and only move forward when you feel comfortable. By Iteration 5 you will understand the project well enough to answer any question about it in a presentation or viva.</p>
+  <table>
+    <tr><th>Iteration</th><th>What You Learn</th><th>Good For</th></tr>
+    <tr><td><span class="iter-badge i1">1 — Big Picture</span></td><td>What problem, what we did, what we found</td><td>Explaining to anyone</td></tr>
+    <tr><td><span class="iter-badge i2">2 — Core Concepts</span></td><td>Pre-training, fine-tuning, F1, zero/few-shot</td><td>Non-technical audience</td></tr>
+    <tr><td><span class="iter-badge i3">3 — Under the Hood</span></td><td>Transformers, attention, class weights, collapse</td><td>Technical audience</td></tr>
+    <tr><td><span class="iter-badge i4">4 — The Code</span></td><td>Every file, every key function, why it was written that way</td><td>Code walkthrough</td></tr>
+    <tr><td><span class="iter-badge i5">5 — Maximum Depth</span></td><td>Math of warmup, weight decay, fp16, collapse proof</td><td>Deep-dive questions</td></tr>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ ITERATION 1 -->
+<div class="section s1">
+  <span class="iter-badge i1">Iteration 1 — The Big Picture</span>
+  <h2>What Did We Do and Why Does It Matter?</h2>
+
+  <h3>The Problem</h3>
+  <p>Hate speech on social media disproportionately affects non-English communities. Automated detection systems are almost entirely built for English. <strong>Roman Urdu</strong> — Urdu typed in the Latin alphabet — is how most Pakistanis write informally online. Existing systems are blind to hate speech in this form.</p>
+
+  <div class="box box-concept">
+    <strong>Roman Urdu example:</strong> "Yeh log bohat bure hain" — this is Urdu written in English letters. No standard spelling rules. Mixed English-Urdu vocabulary. Culturally specific insults that don't appear in English datasets.
+  </div>
+
+  <h3>Our Approach</h3>
+  <p>We used <strong>Transfer Learning</strong>: take a model already trained on English hate speech and try to make it work on Roman Urdu — without collecting thousands of labelled Roman Urdu examples.</p>
+
+  <div class="pipeline">
+    <div class="pipe-box blue">21,000<br>English Tweets<br><small>(labelled)</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box green">Train 3<br>AI Models</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box red">Test on<br>Roman Urdu<br><small>(no retraining)</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box purple">Measure<br>What Works<br>&amp; What Fails</div>
+  </div>
+
+  <h3>Three Key Findings</h3>
+
+  <div class="box box-key">
+    <strong>Finding 1 — Bigger models are better on English.</strong><br>
+    The largest model (XLM-R-large) correctly identified hate speech more often than smaller models on English test data.
+  </div>
+
+  <div class="box box-warn">
+    <strong>Finding 2 — Zero-shot transfer completely fails.</strong><br>
+    When we pointed the English-trained model at Roman Urdu without any additional training, it almost never flagged anything as hate speech. It learned <em>what English hate looks like</em>, not <em>what hate looks like</em>.
+  </div>
+
+  <div class="box box-warn">
+    <strong>Finding 3 — Standard few-shot training collapses to all-hate.</strong><br>
+    Giving the model just 8–64 labelled Roman Urdu examples caused it to swing to the opposite extreme — flagging <em>everything</em> as hate (FPR ≈ 1.0). Even using balanced class weights [1.0, 1.0] could not prevent this collapse at K ≤ 32.
+  </div>
+
+  <div class="box box-key">
+    <strong>Finding 4 — Prompt-based fine-tuning breaks the collapse.</strong><br>
+    By reframing classification as masked-word prediction — appending <em>"This text is [MASK]."</em> and using the pre-trained MLM head — we avoid the random-init problem. At K=64: Macro F1 jumps from 0.528 → <strong>0.745</strong>, FPR drops from 0.777 → 0.355.
+  </div>
+
+  <div class="box box-key">
+    <strong>Finding 5 — Classical ML and supervised fine-tuning achieve best results.</strong><br>
+    TF-IDF + FuzzyWuzzy similarity features + Logistic Regression (full Urdu training set) reaches Hate F1 = 0.857, Macro F1 = 0.841. Full supervised fine-tuning of XLM-R-large on all 7,208 Urdu samples achieves Hate F1 = <strong>0.895</strong>, Macro F1 = <strong>0.885</strong> — the project's best result.
+  </div>
+
+  <div class="box box-result">
+    <strong>Finding 6 — The model is biased against religion.</strong><br>
+    Text mentioning religion was flagged as hate speech 5× more often than average, even when it wasn't hateful. The model learned religious words as hate signals from English training data.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ ITERATION 2 -->
+<div class="section s2">
+  <span class="iter-badge i2">Iteration 2 — Core Concepts</span>
+  <h2>The Key Ideas You Need to Know</h2>
+
+  <h3>1. This is a Text Classification Problem</h3>
+  <p>Input: one tweet. Output: <em>hate</em> or <em>not hate</em>. Everything else is in service of doing this one thing well across languages.</p>
+
+  <h3>2. Pre-training vs Fine-tuning</h3>
+  <p>Training an AI to understand language from scratch needs months on hundreds of GPUs. Instead we use a model that Meta already trained on 2.5 terabytes of text in 100 languages. We then <em>fine-tune</em> it — teaching it our specific task.</p>
+
+  <div class="pipeline">
+    <div class="pipe-box" style="min-width:160px"><strong>Pre-training</strong><br><small>Done by Meta/Google<br>2.5 TB, 100 languages<br>Learns language itself</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box green" style="min-width:160px"><strong>Fine-tuning</strong><br><small>Done by us<br>21,000 EN tweets<br>Learns hate speech</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box blue" style="min-width:160px"><strong>Inference</strong><br><small>Run on new tweets<br>EN or Roman Urdu</small></div>
+  </div>
+
+  <h3>3. Three Models — Why Compare Them?</h3>
+  <p>We asked: does spending more compute give better results? We tested three models of increasing size.</p>
+
+  <div class="model-compare">
+    <div class="model-card">
+      <div class="model-icon">🚗</div>
+      <div class="model-name">mBERT</div>
+      <div class="model-params">179 M parameters</div>
+      <div class="model-layers">12 layers · Google · 2018</div>
+    </div>
+    <div class="model-card">
+      <div class="model-icon">🚙</div>
+      <div class="model-name">XLM-R-base</div>
+      <div class="model-params">278 M parameters</div>
+      <div class="model-layers">12 layers · Meta · 2020</div>
+    </div>
+    <div class="model-card best-model">
+      <div class="model-icon">🏆</div>
+      <div class="model-name">XLM-R-large</div>
+      <div class="model-params">560 M parameters</div>
+      <div class="model-layers">24 layers · Meta · 2020 · <strong>Our primary</strong></div>
+    </div>
+  </div>
+
+  <h3>4. Why F1 Score, Not Accuracy?</h3>
+
+  <p>Our English data: <strong>94.8% non-hate, 5.2% hate</strong>. A model that says "not hate" for every tweet gets 94.8% accuracy but catches zero hate speech.</p>
+
+  <div class="bar-wrap">
+    <div class="bar-row">
+      <div class="bar-label">EN Non-hate</div>
+      <div class="bar-track">
+        <div class="bar-fill bar-nh" style="width:94.8%">94.8%</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">EN Hate</div>
+      <div class="bar-track">
+        <div class="bar-fill bar-h" style="width:5.2%">5.2%</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Urdu Non-hate</div>
+      <div class="bar-track">
+        <div class="bar-fill bar-nh" style="width:46.5%">46.5%</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Urdu Hate</div>
+      <div class="bar-track">
+        <div class="bar-fill bar-h" style="width:53.5%">53.5%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-concept">
+    <strong>F1 Score</strong> = the harmonic mean of Precision and Recall.<br><br>
+    <strong>Precision:</strong> Of everything I flagged as hate, how many actually were? (avoids false alarms)<br>
+    <strong>Recall:</strong> Of all actual hate, how much did I catch? (avoids missing hate)<br>
+    <strong>F1:</strong> 2 × (Precision × Recall) / (Precision + Recall) — you need both to be high.
+  </div>
+
+  <h3>5. Zero-shot vs Few-shot vs Supervised — All Results</h3>
+  <table>
+    <tr><th>Protocol</th><th>Method</th><th>Hate F1</th><th>Macro F1</th><th>FPR</th></tr>
+    <tr><td><strong>Zero-shot</strong></td><td>XLM-R-large (EN trained)</td><td class="bad">0.005</td><td class="bad">0.319</td><td>0.003</td></tr>
+    <tr><td><strong>8-shot</strong></td><td>Standard fine-tuning</td><td>0.697</td><td class="bad">0.350</td><td class="bad">0.998</td></tr>
+    <tr><td><strong>8-shot</strong></td><td>Prompt-based fine-tuning</td><td>0.690</td><td>0.474</td><td class="bad">0.801</td></tr>
+    <tr><td><strong>32-shot</strong></td><td>Standard fine-tuning</td><td>0.697</td><td class="bad">0.349</td><td class="bad">1.000</td></tr>
+    <tr><td><strong>32-shot</strong></td><td>Prompt-based fine-tuning</td><td>0.737</td><td>0.634</td><td>0.550</td></tr>
+    <tr><td><strong>64-shot</strong></td><td>Standard fine-tuning</td><td>0.715</td><td>0.528</td><td class="bad">0.777</td></tr>
+    <tr class="highlight-row"><td><strong>64-shot</strong></td><td>Prompt-based fine-tuning</td><td class="best">0.787</td><td class="best">0.745</td><td>0.355</td></tr>
+    <tr><td><strong>Full supervised</strong></td><td>TF-IDF + FuzzyWuzzy + LR</td><td class="best">0.857</td><td class="best">0.841</td><td>0.207</td></tr>
+    <tr class="highlight-row"><td><strong>Full supervised</strong></td><td>XLM-R-large (Urdu trained)</td><td class="best">0.895</td><td class="best">0.885</td><td class="best">0.140</td></tr>
+  </table>
+
+  <h3>6. What Is Prompt-Based Fine-Tuning?</h3>
+  <p>Standard fine-tuning adds a brand-new classification head (2 output neurons, randomly initialised) on top of the transformer. With only K=8 examples, the random head overwhelms the pre-trained features. Prompt-based fine-tuning avoids this by reframing the task as a fill-in-the-blank problem the model already knows.</p>
+
+  <div class="pipeline">
+    <div class="pipe-box" style="min-width:180px"><small>Input tweet:</small><br>"Yeh log bure hain"</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box blue" style="min-width:200px"><small>Append template:</small><br>"Yeh log bure hain<br><strong>This text is [MASK].</strong>"</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box green" style="min-width:180px"><small>MLM head predicts [MASK]:</small><br>hate/bad/vile → HATE<br>normal/okay/good → SAFE</div>
+  </div>
+
+  <div class="box box-concept">
+    <strong>Why it works:</strong> The MLM head has been trained on 2.5 TB of text to predict masked words. It already knows "hate" and "normal" are semantically related to hostile vs. neutral content. A randomly-initialised classification head has no such prior knowledge — it must learn from scratch, which fails catastrophically with only 8–64 examples.
+  </div>
+
+  <h3>7. What Is TF-IDF + FuzzyWuzzy?</h3>
+  <p>Before deep learning, text classification used hand-crafted features. We combined two types:</p>
+  <ul>
+    <li><strong>TF-IDF (Term Frequency–Inverse Document Frequency):</strong> turns each tweet into a bag-of-words vector, weighting rare words higher. A word common everywhere (like "the") gets near-zero weight; a word rare but specific to hate (like a slur) gets high weight.</li>
+    <li><strong>FuzzyWuzzy similarity:</strong> computes how similar each tweet is to a set of known hate phrases using fuzzy string matching. Handles spelling variation common in Roman Urdu (same word spelled 5 different ways).</li>
+  </ul>
+  <div class="box box-concept">
+    <strong>Result:</strong> TF-IDF + FuzzyWuzzy + Logistic Regression on the full Urdu dataset achieves Hate F1 = 0.857 — <em>beating</em> the few-shot transformer methods. This confirms that Roman Urdu hate speech is quite lexically distinctive, and simple word-counting captures that signal efficiently when enough labelled data is available.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ ITERATION 3 -->
+<div class="section s3">
+  <span class="iter-badge i3">Iteration 3 — Under the Hood</span>
+  <h2>Transformers, Training, and the Collapse</h2>
+
+  <h3>1. How Text Becomes Numbers (Tokenization)</h3>
+  <p>Neural networks only understand numbers. XLM-R uses <strong>SentencePiece</strong> — it breaks words into subword pieces, each mapped to an integer ID, then to a 1024-dimensional vector.</p>
+
+  <div class="box box-concept">
+    <strong>Subword example:</strong><br>
+    "hatred" → [<code>hat</code>, <code>red</code>] → [1423, 892] → two 1024-dim vectors<br>
+    "bure" (Roman Urdu) → [<code>bur</code>, <code>e</code>] → two 1024-dim vectors<br><br>
+    Why subwords? No single vocabulary can contain every word in 100 languages. Subwords handle unknown words by decomposing them into known pieces.
+  </div>
+
+  <h3>2. Self-Attention — The Core of Transformers</h3>
+  <p>Self-attention lets every token look at every other token and decide how much to attend to it. This is what lets the model understand context.</p>
+
+  <!-- Attention grid visual -->
+  <div class="attn-wrap">
+    <p style="font-size:.85rem;font-weight:700;margin-bottom:.4rem">Attention weights: each row shows how much one word attends to others</p>
+    <div style="display:grid;grid-template-columns:60px repeat(6,38px);gap:3px;width:fit-content">
+      <div></div>
+      <div class="attn-header">I</div>
+      <div class="attn-header">hate</div>
+      <div class="attn-header">this</div>
+      <div class="attn-header">weather</div>
+      <div class="attn-header">not</div>
+      <div class="attn-header">person</div>
+
+      <div class="attn-row-label">I</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.9)">0.9</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.2)">0.2</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.05)">0.1</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.05)">0.1</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.05)">0.1</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.05)">0.1</div>
+
+      <div class="attn-row-label">hate</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.1)">0.1</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.4)">0.4</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.1)">0.1</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.7)">0.7</div>
+      <div class="attn-cell" style="background:rgba(220,53,69,.8)">0.8</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.3)">0.3</div>
+
+      <div class="attn-row-label">not</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.1)">0.1</div>
+      <div class="attn-cell" style="background:rgba(220,53,69,.9)">0.9</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.2)">0.2</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.3)">0.3</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.9)">0.9</div>
+      <div class="attn-cell" style="background:rgba(33,150,243,.2)">0.2</div>
+    </div>
+    <p class="attn-caption">Red cell: "hate" attends strongly to "not" — the model learns the negation context. A bag-of-words model would just count "hate" and flag it.</p>
+  </div>
+
+  <h3>3. What Fine-tuning Physically Changes</h3>
+
+  <div class="pipeline">
+    <div class="pipe-box" style="min-width:130px">Pre-trained<br>XLM-R<br><small>560M params<br>general language</small></div>
+    <div class="pipe-arrow">+</div>
+    <div class="pipe-box red" style="min-width:130px">New Head<br>[CLS] → 2 scores<br><small>~2K new params<br>randomly init</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box green" style="min-width:150px">Gradient descent<br>updates ALL 560M<br><small>LR=1e-5 (very small<br>to protect backbone)</small></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box blue" style="min-width:130px">Fine-tuned<br>XLM-R<br><small>hate-speech<br>specialist</small></div>
+  </div>
+
+  <h3>4. Class-Weighted Loss — Solving the Imbalance</h3>
+
+  <p>Without weighting: a model that says "not hate" always gets loss ≈ 0.05 — it never learns. We upweight hate samples by 8×:</p>
+
+  <div class="box box-math">Loss = −Σ w[yᵢ] · log p(yᵢ | xᵢ)
+
+Where w = [1.0, 8.0]
+          (non-hate, hate)
+
+Missing a hate sample costs 8× more than missing a non-hate sample.
+The model can no longer afford to ignore the minority class.</div>
+
+  <div class="loss-compare">
+    <div class="loss-card bad-card">
+      <h4>Without class weights</h4>
+      <div>Predicts everything non-hate</div>
+      <div class="loss-val">Hate F1 ≈ 0</div>
+      <div style="font-size:.82rem;margin-top:.3rem">Model is useless for the task</div>
+    </div>
+    <div class="loss-card good">
+      <h4>With w = [1.0, 8.0]</h4>
+      <div>Forced to catch hate speech</div>
+      <div class="loss-val">Hate F1 ≈ 0.51</div>
+      <div style="font-size:.82rem;margin-top:.3rem">XLM-R-large on English dev</div>
+    </div>
+  </div>
+
+  <h3>5. Why Few-Shot Collapsed — The Root Cause</h3>
+
+  <div class="box box-warn">
+    <strong>The mismatch (first hypothesis):</strong> We initially used class weight w_hate = 3.0 (calibrated for English's 5.2% hate) on Urdu data that is 53.5% hate — already nearly balanced. With w_hate = 3.0 on balanced data, the model minimises loss by predicting everything as hate. Reducing to w = [1.0, 1.0] reduced collapse severity, but standard few-shot fine-tuning <strong>still collapsed at K ≤ 32</strong>.
+  </div>
+
+  <div class="box box-warn">
+    <strong>The deeper cause (confirmed):</strong> Standard fine-tuning adds a randomly-initialised 2-neuron classification head. With K=8 examples, the noisy gradients from this random head corrupt the pre-trained backbone's representations in the first few steps. With balanced data and K≤32, the easiest gradient path is always "predict all hate" — this minimises the loss without learning discriminative features. This is a <strong>degenerate global minimum</strong> that even balanced class weights cannot escape.
+  </div>
+
+  <h3>5b. Prompt-Based Fine-Tuning — The Fix</h3>
+
+  <div class="box box-key">
+    <strong>Key insight:</strong> Instead of a random classification head, use XLM-R's pre-trained Masked Language Modelling (MLM) head. Append the template <code>"{tweet} This text is [MASK]."</code> and predict the [MASK] token. Map predicted token probabilities to class probabilities via a <em>verbalizer</em>:
+  </div>
+
+  <div class="box box-math">Verbalizer mapping:
+  HATE class    → tokens: {"hate", "bad", "wrong", "vile", "terrible"}
+  NON-HATE class → tokens: {"normal", "fine", "okay", "good"}
+
+Loss function:
+  p(HATE)     = log-sum-exp of MLM log-probabilities for hate tokens
+  p(NON-HATE) = log-sum-exp of MLM log-probabilities for non-hate tokens
+  L           = CrossEntropy(p(HATE), p(NON-HATE), true_label)
+
+Why this avoids collapse:
+  The MLM head already assigns p("hate") > p("normal") for hateful text,
+  even before any few-shot training. Gradient signal is meaningful from
+  step 1, rather than random noise from a new head.</div>
+
+  <div class="box box-concept">
+    <strong>Result:</strong> At K=64, Macro F1 rises from 0.528 (standard FT) → <strong>0.745</strong> (prompt-based). FPR drops from 0.777 → <strong>0.355</strong>. At K=32, Macro F1 rises from 0.349 → <strong>0.634</strong> — the gap is even larger, confirming that prompt-based is most helpful when data is scarce.
+  </div>
+
+  <h3>6. Confusion Matrix — Understanding FPR</h3>
+
+  <div class="cm-wrap">
+    <div>
+      <div class="cm-grid">
+        <div class="cm-cell cm-label"></div>
+        <div class="cm-cell cm-label" style="width:90px">Pred: Non-hate</div>
+        <div class="cm-cell cm-label" style="width:90px">Pred: Hate</div>
+        <div class="cm-cell cm-label">True: Non-hate</div>
+        <div class="cm-cell cm-tn">TN ✓<br><small>Correctly safe</small></div>
+        <div class="cm-cell cm-fp">FP ✗<br><small>False alarm!</small></div>
+        <div class="cm-cell cm-label">True: Hate</div>
+        <div class="cm-cell cm-fn">FN ✗<br><small>Missed hate</small></div>
+        <div class="cm-cell cm-tp">TP ✓<br><small>Caught hate</small></div>
+      </div>
+    </div>
+    <div class="cm-legend">
+      <strong>FPR</strong> = FP / (FP + TN)<br>
+      How often does the model wrongly flag safe content?<br><br>
+      <strong>Hate Recall</strong> = TP / (TP + FN)<br>
+      Of all real hate, how much did we catch?<br><br>
+      <strong>Hate Precision</strong> = TP / (TP + FP)<br>
+      Of all flagged hate, how much was real?<br><br>
+      <span style="color:#dc3545"><strong>Few-shot collapse:</strong><br>
+      Recall = 1.0, FPR = 1.0<br>
+      (everything flagged as hate)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ ITERATION 4 -->
+<div class="section s4">
+  <span class="iter-badge i4">Iteration 4 — The Code</span>
+  <h2>Every File and Every Key Decision</h2>
+
+  <h3>Project File Structure</h3>
+  <pre><span class="c-comment">D:\Deep Learning Project\</span>
+├── <span class="c-fn">src/</span>
+│   ├── <span class="c-string">data_loader.py</span>       <span class="c-comment"># TSV → HuggingFace Dataset</span>
+│   ├── <span class="c-string">evaluator.py</span>         <span class="c-comment"># F1, FPR, fairness metrics</span>
+│   └── <span class="c-string">utils.py</span>             <span class="c-comment"># seed, logging, config loading</span>
+├── <span class="c-fn">scripts/</span>
+│   ├── <span class="c-string">train.py</span>             <span class="c-comment"># main fine-tuning (English)</span>
+│   ├── <span class="c-string">zero_shot_eval.py</span>    <span class="c-comment"># English checkpoint → Urdu zero-shot</span>
+│   ├── <span class="c-string">few_shot_train.py</span>    <span class="c-comment"># standard K-shot fine-tuning (collapses)</span>
+│   ├── <span class="c-string">prompt_finetune.py</span>   <span class="c-comment"># ★ prompt-based few-shot (the fix!)</span>
+│   ├── <span class="c-string">classical_baseline.py</span><span class="c-comment"># TF-IDF + FuzzyWuzzy + LogReg</span>
+│   ├── <span class="c-string">run_ur_supervised.py</span> <span class="c-comment"># full Urdu supervised fine-tuning</span>
+│   └── <span class="c-string">preprocess.py</span>        <span class="c-comment"># create K-shot splits</span>
+├── <span class="c-fn">configs/</span>
+│   ├── <span class="c-string">xlmr_large.yaml</span>      <span class="c-comment"># hyperparameters for large model</span>
+│   └── <span class="c-string">few_shot.yaml</span>        <span class="c-comment"># hyperparameters for K-shot</span>
+└── <span class="c-fn">outputs/</span>
+    ├── <span class="c-string">checkpoints/</span>         <span class="c-comment"># saved model weights</span>
+    └── <span class="c-string">predictions/</span>         <span class="c-comment"># JSON metrics + CSV summaries</span></pre>
+
+  <h3>File 1: <code>src/data_loader.py</code> — Raw Data → Model-Ready</h3>
+
+  <pre><span class="c-comment"># Reading the TSV safely — quoting=3 means "never treat quotes specially"</span>
+<span class="c-comment"># tweets often contain quotation marks that would break CSV parsing</span>
+df = pd.<span class="c-fn">read_csv</span>(filepath, sep=<span class="c-string">'\t'</span>, dtype=<span class="c-string">str</span>, quoting=<span class="c-number">3</span>)
+
+<span class="c-comment"># Convert pandas DataFrame → HuggingFace Dataset</span>
+<span class="c-comment"># HuggingFace Dataset: smarter pandas — supports GPU batching & caching</span>
+<span class="c-keyword">def</span> <span class="c-fn">df_to_hf_dataset</span>(df):
+    <span class="c-keyword">return</span> Dataset.<span class="c-fn">from_dict</span>({
+        <span class="c-string">'text'</span>:  df[<span class="c-string">'text'</span>].<span class="c-fn">tolist</span>(),
+        <span class="c-string">'label'</span>: df[<span class="c-string">'hs'</span>].<span class="c-fn">tolist</span>()   <span class="c-comment"># hs = hate speech (0 or 1)</span>
+    })</pre>
+
+  <h3>File 2: <code>src/evaluator.py</code> — Computing Every Metric</h3>
+
+  <pre><span class="c-comment"># This function is called automatically after every training epoch</span>
+<span class="c-keyword">def</span> <span class="c-fn">compute_metrics</span>(eval_pred):
+    logits, labels = eval_pred          <span class="c-comment"># logits shape: [N, 2]</span>
+    preds = np.<span class="c-fn">argmax</span>(logits, axis=-<span class="c-number">1</span>) <span class="c-comment"># pick class with higher score</span>
+    <span class="c-keyword">return</span> {
+        <span class="c-string">'f1_hate'</span>:  <span class="c-fn">f1_score</span>(labels, preds, pos_label=<span class="c-number">1</span>),
+        <span class="c-string">'f1_macro'</span>: <span class="c-fn">f1_score</span>(labels, preds, average=<span class="c-string">'macro'</span>),
+        <span class="c-string">'fpr'</span>:      <span class="c-fn">_fpr</span>(labels, preds),   <span class="c-comment"># FP / (FP + TN)</span>
+    }
+
+<span class="c-comment"># Fairness: filter predictions to group-mentioning tweets</span>
+group_records = [
+    r <span class="c-keyword">for</span> r <span class="c-keyword">in</span> records
+    <span class="c-keyword">if</span> <span class="c-fn">set</span>(r[<span class="c-string">'text'</span>].<span class="c-fn">lower</span>().<span class="c-fn">split</span>()) &amp; RELIGION_TERMS  <span class="c-comment"># set intersection</span>
+]
+<span class="c-comment"># Then compute FPR on just those records</span></pre>
+
+  <h3>File 3: <code>scripts/train.py</code> — The WeightedTrainer</h3>
+
+  <pre><span class="c-comment"># Subclass HuggingFace Trainer — only override compute_loss</span>
+<span class="c-comment"># Everything else (gradient accumulation, fp16, checkpointing) stays as-is</span>
+<span class="c-keyword">class</span> <span class="c-class">WeightedTrainer</span>(Trainer):
+    <span class="c-keyword">def</span> <span class="c-fn">compute_loss</span>(<span class="c-keyword">self</span>, model, inputs, return_outputs=<span class="c-keyword">False</span>, **kwargs):
+        labels = inputs.<span class="c-fn">pop</span>(<span class="c-string">'labels'</span>)    <span class="c-comment"># pull out labels manually</span>
+        outputs = <span class="c-fn">model</span>(**inputs)          <span class="c-comment"># forward pass</span>
+        weights = torch.<span class="c-fn">tensor</span>(
+            [<span class="c-number">1.0</span>, <span class="c-number">8.0</span>],                    <span class="c-comment"># non-hate, hate</span>
+            device=outputs.logits.device   <span class="c-comment"># MUST be on same GPU as model</span>
+        )
+        loss = torch.nn.<span class="c-fn">CrossEntropyLoss</span>(weight=weights)(
+            outputs.logits, labels
+        )
+        <span class="c-keyword">return</span> (loss, outputs) <span class="c-keyword">if</span> return_outputs <span class="c-keyword">else</span> loss</pre>
+
+  <h3>Key Training Hyperparameters Explained</h3>
+
+  <table>
+    <tr><th>Parameter</th><th>Value</th><th>Why This Value</th></tr>
+    <tr><td><code>learning_rate</code></td><td>1×10⁻⁵</td><td>Very small — protects 560M pre-trained weights from large noisy updates</td></tr>
+    <tr><td><code>per_device_train_batch_size</code></td><td>8</td><td>Maximum that fits in 8.6 GB VRAM with XLM-R-large</td></tr>
+    <tr><td><code>gradient_accumulation_steps</code></td><td>4</td><td>Effective batch = 8×4 = 32; simulates larger batch without more VRAM</td></tr>
+    <tr><td><code>fp16</code></td><td>True</td><td>Half precision: halves VRAM, 2× faster; 560M × 2 bytes = 1.12 GB vs 2.24 GB</td></tr>
+    <tr><td><code>warmup_ratio</code></td><td>0.1</td><td>First 10% of steps LR ramps 0→1e-5; lets random head settle before full LR</td></tr>
+    <tr><td><code>metric_for_best_model</code></td><td>f1_hate</td><td>Save best checkpoint by hate F1, not accuracy — accuracy is misleading on imbalanced data</td></tr>
+    <tr><td><code>num_train_epochs</code></td><td>5</td><td>Best model (epoch 2) selected by dev hate F1; training continues but plateau detected</td></tr>
+  </table>
+
+  <h3>File 4: <code>scripts/few_shot_train.py</code> — The K-shot Loop</h3>
+
+  <pre><span class="c-comment"># Outer loop: K values × seeds = 4 × 3 = 12 experiments</span>
+<span class="c-keyword">for</span> k <span class="c-keyword">in</span> [<span class="c-number">8</span>, <span class="c-number">16</span>, <span class="c-number">32</span>, <span class="c-number">64</span>]:
+    <span class="c-keyword">for</span> seed <span class="c-keyword">in</span> range(<span class="c-number">3</span>):   <span class="c-comment"># seeds 0, 1, 2</span>
+        split_path = f<span class="c-string">'ur_{k}shot_seed{seed}.json'</span>
+        m = <span class="c-fn">run_few_shot</span>(checkpoint, split_path, ...)
+        seed_metrics.<span class="c-fn">append</span>(m)
+
+    <span class="c-comment"># Report mean ± std across seeds</span>
+    <span class="c-comment"># If std ≈ 0.000 → model always finds same solution (collapse confirmed)</span>
+    f1_mean = np.<span class="c-fn">mean</span>([m[<span class="c-string">'f1_hate'</span>] <span class="c-keyword">for</span> m <span class="c-keyword">in</span> seed_metrics])
+    f1_std  = np.<span class="c-fn">std</span>( [m[<span class="c-string">'f1_hate'</span>] <span class="c-keyword">for</span> m <span class="c-keyword">in</span> seed_metrics])</pre>
+
+  <h3>File 5: <code>scripts/prompt_finetune.py</code> — The MLM Verbalizer Approach</h3>
+
+  <pre><span class="c-comment"># Template: append fill-in-the-blank prompt to every tweet</span>
+TEMPLATE = <span class="c-string">"{text} This text is {mask_token}."</span>
+
+<span class="c-comment"># Verbalizer: map word tokens to class labels</span>
+<span class="c-comment"># Confirmed all tokens are single SentencePiece pieces (no splitting)</span>
+HATE_WORDS    = [<span class="c-string">"hate"</span>, <span class="c-string">"bad"</span>, <span class="c-string">"wrong"</span>, <span class="c-string">"vile"</span>, <span class="c-string">"terrible"</span>]
+NONHATE_WORDS = [<span class="c-string">"normal"</span>, <span class="c-string">"fine"</span>, <span class="c-string">"okay"</span>, <span class="c-string">"good"</span>]
+
+<span class="c-comment"># Forward pass: get MLM logits at [MASK] position</span>
+<span class="c-keyword">def</span> <span class="c-fn">verbalizer_loss</span>(model, input_ids, attention_mask, labels):
+    mask_pos = (input_ids == MASK_ID).<span class="c-fn">nonzero</span>(as_tuple=<span class="c-keyword">True</span>)[<span class="c-number">1</span>]
+    out = <span class="c-fn">model</span>(input_ids=input_ids, attention_mask=attention_mask)
+    logits = out.logits[<span class="c-fn">range</span>(<span class="c-fn">len</span>(mask_pos)), mask_pos]  <span class="c-comment"># [B, vocab]</span>
+
+    <span class="c-comment"># Log-sum-exp: aggregate probabilities for each class's word set</span>
+    p_hate = <span class="c-fn">torch.logsumexp</span>(logits[:, hate_ids],    dim=<span class="c-number">-1</span>)  <span class="c-comment"># [B]</span>
+    p_safe = <span class="c-fn">torch.logsumexp</span>(logits[:, nonhate_ids], dim=<span class="c-number">-1</span>)  <span class="c-comment"># [B]</span>
+    class_logits = <span class="c-fn">torch.stack</span>([p_safe, p_hate], dim=<span class="c-number">1</span>)       <span class="c-comment"># [B, 2]</span>
+
+    <span class="c-keyword">return</span> torch.nn.<span class="c-fn">CrossEntropyLoss</span>()(class_logits, labels)
+
+<span class="c-comment"># Outer loop: 4 K values × 3 seeds = 12 experiments</span>
+<span class="c-keyword">for</span> k <span class="c-keyword">in</span> [<span class="c-number">8</span>, <span class="c-number">16</span>, <span class="c-number">32</span>, <span class="c-number">64</span>]:
+    <span class="c-keyword">for</span> seed <span class="c-keyword">in</span> [<span class="c-number">0</span>, <span class="c-number">1</span>, <span class="c-number">2</span>]:
+        <span class="c-comment"># Load same stratified splits as standard few-shot</span>
+        <span class="c-comment"># Same splits → fair comparison</span>
+        ...</pre>
+
+  <div class="box box-concept">
+    <strong>Key engineering choices:</strong><br>
+    1. <code>log-sum-exp</code> aggregation is used (not mean) because log-probabilities are in log-space — summing exps then taking log is numerically stable and correctly combines probabilities.<br>
+    2. Running Python with <code>-X utf8</code> flag is required on Windows — SentencePiece token names contain Unicode characters (▁) that crash the default cp1252 encoding.<br>
+    3. The model used is <code>xlm-roberta-large</code> in <em>masked language modelling</em> mode (<code>AutoModelForMaskedLM</code>), not sequence classification mode.
+  </div>
+
+  <h3>File 6: <code>scripts/classical_baseline.py</code> — TF-IDF + FuzzyWuzzy</h3>
+
+  <pre><span class="c-keyword">from</span> sklearn.feature_extraction.text <span class="c-keyword">import</span> TfidfVectorizer
+<span class="c-keyword">from</span> fuzzywuzzy <span class="c-keyword">import</span> fuzz
+<span class="c-keyword">from</span> sklearn.linear_model <span class="c-keyword">import</span> LogisticRegression
+
+<span class="c-comment"># 1. TF-IDF features: bag-of-words with subword n-grams</span>
+<span class="c-comment">#    char_wb = character-level n-grams within word boundaries</span>
+<span class="c-comment">#    handles Roman Urdu spelling variation ("bura"/"boora"/"booraa")</span>
+tfidf = <span class="c-fn">TfidfVectorizer</span>(ngram_range=(<span class="c-number">1</span>,<span class="c-number">3</span>), analyzer=<span class="c-string">'char_wb'</span>, max_features=<span class="c-number">50000</span>)
+X_train = tfidf.<span class="c-fn">fit_transform</span>(train_texts)
+
+<span class="c-comment"># 2. FuzzyWuzzy: fuzzy string similarity to prototype hate phrases</span>
+<span class="c-comment">#    Returns 0-100 similarity score; handles spelling noise</span>
+<span class="c-keyword">def</span> <span class="c-fn">fuzzy_features</span>(text, prototypes):
+    <span class="c-keyword">return</span> [<span class="c-fn">fuzz.partial_ratio</span>(text, p) / <span class="c-number">100.0</span> <span class="c-keyword">for</span> p <span class="c-keyword">in</span> prototypes]
+
+<span class="c-comment"># 3. Concatenate TF-IDF + fuzzy → train Logistic Regression</span>
+<span class="c-comment">#    LR is fast, interpretable, and competitive on lexical tasks</span>
+clf = <span class="c-fn">LogisticRegression</span>(C=<span class="c-number">1.0</span>, max_iter=<span class="c-number">1000</span>)
+clf.<span class="c-fn">fit</span>(<span class="c-fn">np.hstack</span>([X_train.<span class="c-fn">toarray</span>(), fuzzy_train]), y_train)</pre>
+
+  <div class="box box-result">
+    <strong>Why classical ML works so well here:</strong> Roman Urdu hate speech is highly lexical — specific words and phrases recur frequently across hate samples. TF-IDF captures these word patterns directly. FuzzyWuzzy handles the highly variable spelling (e.g. "kafir", "kaafir", "kafer" all map to similar fuzzy scores). With 7,208 training examples the vocabulary is well-covered, and Logistic Regression can separate the classes cleanly. Result: Hate F1 = <strong>0.857</strong>, beating all few-shot transformer methods.
+  </div>
+
+  <h3>Full Data → Results Pipeline</h3>
+
+  <div class="pipeline" style="flex-direction:column;align-items:flex-start;gap:.6rem">
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="pipe-box" style="min-width:160px">Raw TSV files<br><small>EN train/dev · Urdu train/dev</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box blue">data_loader.py<br><small>pandas → HF Dataset</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box blue">AutoTokenizer<br><small>[input_ids, attn_mask]</small></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="pipe-box blue" style="min-width:160px">Tokenized Dataset<br><small>shape: [N, 128]</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box green">WeightedTrainer<br><small>w=[1.0,8.0] · 5 epochs</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box green">Best checkpoint<br><small>epoch 2 · hate F1=0.509</small></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+      <div class="pipe-box green" style="min-width:160px">Fine-tuned XLM-R-large<br><small>(EN checkpoint)</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box" style="border-color:#dc3545;color:#dc3545">zero_shot_eval.py<br><small>Hate F1 = 0.005</small></div>
+      <div class="pipe-arrow" style="color:transparent">·</div>
+      <div class="pipe-box" style="border-color:#fd7e14;color:#fd7e14">few_shot_train.py<br><small>K=64 · Hate F1=0.715<br>FPR=0.777 (collapse)</small></div>
+      <div class="pipe-arrow" style="color:transparent">·</div>
+      <div class="pipe-box" style="border-color:#28a745;color:#28a745">prompt_finetune.py ★<br><small>K=64 · Hate F1=0.787<br>Macro F1=0.745</small></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+      <div class="pipe-box" style="border-color:#1a1a2e;color:#1a1a2e;min-width:160px">Full Urdu training set<br><small>7,208 samples</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box" style="border-color:#17a2b8;color:#17a2b8">classical_baseline.py<br><small>TF-IDF+Fuzzy+LR<br>Hate F1=0.857</small></div>
+      <div class="pipe-arrow" style="color:transparent">·</div>
+      <div class="pipe-box" style="border-color:#6f42c1;color:#6f42c1">run_ur_supervised.py<br><small>XLM-R-large full FT<br>Hate F1=0.895 ★★</small></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <div class="pipe-box" style="border-color:#6f42c1;color:#6f42c1;min-width:160px">predictions JSON<br><small>text, true, pred, confidence</small></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-box" style="border-color:#6f42c1;color:#6f42c1">fairness_analysis()<br><small>group-conditional FPR</small></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ ITERATION 5 -->
+<div class="section s5">
+  <span class="iter-badge i5">Iteration 5 — Maximum Depth</span>
+  <h2>The Mathematics Behind Every Decision</h2>
+
+  <h3>1. Why XLM-R Beats mBERT — Three Specific Reasons</h3>
+  <table>
+    <tr><th>Property</th><th>mBERT</th><th>XLM-R</th></tr>
+    <tr><td><strong>Tokenizer</strong></td><td>WordPiece · 119K vocab · Wikipedia only</td><td>SentencePiece BPE · 250K vocab · Common Crawl (web)</td></tr>
+    <tr><td><strong>Training objective</strong></td><td>MLM + Next Sentence Prediction (NSP)</td><td>MLM only · dynamic masking · NSP dropped (shown to hurt)</td></tr>
+    <tr><td><strong>Training data</strong></td><td>~10 GB · proportional to Wikipedia size → English dominates</td><td>2.5 TB · temperature sampling T=0.7 → oversamples low-resource languages</td></tr>
+    <tr class="highlight-row"><td><strong>Result</strong></td><td>Hate F1 = 0.461</td><td>Hate F1 = 0.509 · FPR = 0.030</td></tr>
+  </table>
+
+  <h3>2. Learning Rate Schedule — The Exact Math</h3>
+
+  <div class="box box-math">Training setup:
+  21,159 EN samples · batch size 8 · gradient accumulation 4
+  steps per epoch      = ⌈21159 / 8⌉   = 2645
+  update steps / epoch = ⌈2645 / 4⌉    = 662
+  total updates (5 ep) = 662 × 5       = 3310
+  warmup steps         = 0.1 × 3310    = 331
+
+Learning rate schedule:
+  LR(step) = lr_max × step/warmup          for step ≤ 331
+  LR(step) = lr_max × (3310-step)/2979     for step > 331
+
+Why warmup? At step 0 the classifier head is random → large noisy
+gradients. Warmup lets the head stabilise before full LR hits
+the pre-trained backbone's 560M parameters.</div>
+
+  <h3>3. Weight Decay — Preventing Overfitting</h3>
+
+  <div class="box box-math">Total loss with weight decay (λ = 0.01):
+
+  L_total = L_cross_entropy + λ · Σ θᵢ²
+
+Penalises large parameter values → prevents memorising training data.
+Applied as AdamW: weight decay directly on weights, not via gradient
+(more principled than L2 regularisation in Adam).</div>
+
+  <h3>4. fp16 — Half Precision Training</h3>
+  <table>
+    <tr><th>Format</th><th>Bytes/number</th><th>Range</th><th>XLM-R-large weights</th></tr>
+    <tr><td>fp32 (default)</td><td>4 bytes</td><td>~1.2×10⁻³⁸ to 3.4×10³⁸</td><td>560M × 4 = <strong>2.24 GB</strong></td></tr>
+    <tr class="highlight-row"><td>fp16 (we use)</td><td>2 bytes</td><td>~6×10⁻⁸ to 65504</td><td>560M × 2 = <strong>1.12 GB</strong></td></tr>
+  </table>
+  <div class="box box-concept">
+    <strong>Risk:</strong> Small gradients round to zero in fp16 (underflow) → model stops learning.<br>
+    <strong>Fix:</strong> Automatic Mixed Precision (AMP) — multiply loss by 1024 before backprop, divide gradients by 1024 after. This shifts magnitudes into the representable range.
+  </div>
+
+  <h3>5. Gradient Checkpointing — Memory vs Speed</h3>
+
+  <div class="box box-math">Normal training:
+  Forward pass → store ALL 24 layers' activations → Backward pass uses them
+  Memory: O(layers × sequence_length × hidden_size)
+
+Gradient checkpointing:
+  Forward pass → discard activations → Backward pass RECOMPUTES them on the fly
+  Memory: O(1) activations stored
+  Cost: ~33% slower (forward pass runs twice effectively)
+
+We used it for English training (560M model, long sequences).
+Disabled for few-shot (tiny batches, no memory pressure).</div>
+
+  <h3>6. Class Weight Loss — Full Gradient Derivation</h3>
+
+  <div class="box box-math">For a hate sample (y=1) incorrectly predicted with p(hate)=0.05:
+
+Standard gradient: ∂L/∂logit = p_c - 1[c==y]
+  ∂L/∂logit_hate    = 0.05 - 1 = -0.95  (push hate logit up)
+
+Weighted gradient (w_hate = 8.0):
+  ∂L/∂logit_hate    = 8.0 × (0.05 - 1) = -7.6  (8× larger update!)
+
+The model receives 8× larger gradients for missed hate samples.
+This forces it to prioritise hate recall over non-hate accuracy.</div>
+
+  <h3>7. Few-Shot Collapse — Mathematical Proof</h3>
+
+  <div class="box box-math">Urdu: 53.5% hate, 46.5% non-hate. K=8 batch: 4 hate, 4 non-hate.
+Class weights: w_non_hate=1.0, w_hate=3.0
+
+Strategy A — predict ALL non-hate:
+  4 hate wrong:     4 × 3.0 × (-log ε) ≈ 12 × large
+  4 non-hate right: 4 × 1.0 × 0         = 0
+  Total loss ∝ 12 × large
+
+Strategy B — predict ALL hate:
+  4 hate right:     4 × 3.0 × 0         = 0
+  4 non-hate wrong: 4 × 1.0 × (-log ε) ≈ 4 × large
+  Total loss ∝ 4 × large
+
+Strategy B has 3× LESS loss → gradient descent finds it in a few steps.
+This is a global minimum of the loss. No random seed can escape it.
+
+With balanced weights w = [1.0, 1.0]:
+  Strategy A loss ∝ 4 × large
+  Strategy B loss ∝ 4 × large  ← equal!
+
+Equal degenerate loss with balanced weights means gradient descent
+no longer has a preferred degenerate solution. BUT the randomly-
+initialised classification head still produces near-uniform logits
+initially, and with K=8 the gradient signal is noisy enough that
+the model still collapses in practice. Experimental confirmation:
+  K=32, w=[1.0,1.0]: Macro F1=0.349, FPR=1.000 (still collapsed)
+
+Why prompt-based avoids this:
+  MLM head already knows p("hate"|hateful context) >> p("hate"|neutral)
+  → meaningful gradient from step 1 → no degenerate local minimum.</div>
+
+  <h3>8. Results — What Each Number Means to a Researcher</h3>
+
+  <p><strong>English dev hate F1 by model:</strong></p>
+  <div class="result-bar-wrap">
+    <div class="result-bar-row">
+      <div class="result-bar-label">mBERT</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-en" style="width:46.1%">0.461</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label">XLM-R-base</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-en" style="width:49.4%">0.494</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label">XLM-R-large</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-en" style="width:50.9%">0.509 ★</div>
+      </div>
+    </div>
+  </div>
+
+  <p><strong>Zero-shot Urdu hate F1 (note the dramatic drop):</strong></p>
+  <div class="result-bar-wrap">
+    <div class="result-bar-row">
+      <div class="result-bar-label">mBERT (0-shot)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:6.1%">0.061</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label">XLM-R-base</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:5.8%">0.058</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label">XLM-R-large</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:0.5%"></div>
+        <span style="font-size:.8rem;font-weight:700;color:#dc3545;margin-left:.3rem">0.005 — negative transfer</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-result">
+    <strong>Counterintuitive:</strong> XLM-R-large does <em>worse</em> on zero-shot despite being the best on English. Stronger English fine-tuning = tighter English-specific decision boundary = more aggressively conservative on Urdu. This is called <strong>negative transfer</strong>.
+  </div>
+
+  <p><strong>K=64 few-shot — Standard vs Prompt-based (Macro F1):</strong></p>
+  <div class="result-bar-wrap">
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Std FT (K=8)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:35%">0.350</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Prompt FT (K=8)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-fs" style="width:47.4%">0.474</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Std FT (K=32)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:34.9%">0.349</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Prompt FT (K=32)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-fs" style="width:63.4%">0.634</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Std FT (K=64)</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill rb-zs" style="width:52.8%">0.528</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">Prompt FT (K=64) ★</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill" style="width:74.5%;background:linear-gradient(90deg,#28a745,#52c97a)">0.745</div>
+      </div>
+    </div>
+  </div>
+
+  <p><strong>Full-data results — classical ML vs supervised transformer (Macro F1):</strong></p>
+  <div class="result-bar-wrap">
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">TF-IDF+Fuzzy+LR</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill" style="width:84.1%;background:linear-gradient(90deg,#17a2b8,#48cae4)">0.841</div>
+      </div>
+    </div>
+    <div class="result-bar-row">
+      <div class="result-bar-label" style="width:160px">XLM-R-l (sup.) ★★</div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill" style="width:88.5%;background:linear-gradient(90deg,#6f42c1,#9f6ef7)">0.885</div>
+      </div>
+    </div>
+  </div>
+
+  <p><strong>Fairness — Group-conditional FPR (XLM-R-base, zero-shot Urdu):</strong></p>
+  <div class="fairness-wrap">
+    <div class="fairness-row">
+      <div class="fairness-label">Overall</div>
+      <div class="fairness-track">
+        <div class="fairness-fill f-overall" style="width:2.7%"></div>
+        <span style="font-size:.8rem;margin-left:.4rem;font-weight:600">0.027</span>
+      </div>
+    </div>
+    <div class="fairness-row">
+      <div class="fairness-label">Gender</div>
+      <div class="fairness-track">
+        <div class="fairness-fill f-gender" style="width:5.9%"></div>
+        <span style="font-size:.8rem;margin-left:.4rem;font-weight:600">0.059 (2.2×)</span>
+      </div>
+    </div>
+    <div class="fairness-row">
+      <div class="fairness-label">Ethnicity</div>
+      <div class="fairness-track">
+        <div class="fairness-fill f-ethnic" style="width:0.1%"></div>
+        <span style="font-size:.8rem;margin-left:.4rem;font-weight:600">0.000</span>
+      </div>
+    </div>
+    <div class="fairness-row">
+      <div class="fairness-label" style="color:#dc3545;font-weight:700">Religion ⚠</div>
+      <div class="fairness-track">
+        <div class="fairness-fill f-religion" style="width:14.3%"></div>
+        <span style="font-size:.8rem;margin-left:.4rem;font-weight:700;color:#dc3545">0.143 — 5.3× overall!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-warn">
+    <strong>Why religion?</strong> In the English training data (Davidson 2017), religious terminology co-occurred frequently with hate speech. The model learned "religious words = hate signal". In Roman Urdu, religious speech is often non-hateful — generating systematic false positives. This is a <strong>spurious correlation</strong> that transferred cross-lingually.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ QUICK REF -->
+<div class="section">
+  <h2>Quick Reference Glossary</h2>
+  <div class="glossary">
+    <div class="gterm"><strong>Pre-training</strong>Training a model on massive unlabelled text to learn language itself. Done once by large labs; we reuse the result.</div>
+    <div class="gterm"><strong>Fine-tuning</strong>Taking a pre-trained model and training it on labelled task data. Updates all parameters with a small learning rate.</div>
+    <div class="gterm"><strong>Tokenization</strong>Breaking text into subword pieces (tokens) and mapping each to an integer ID → embedding vector.</div>
+    <div class="gterm"><strong>Self-attention</strong>Mechanism allowing every token to attend to every other token; lets the model understand context (negation, sarcasm, targets).</div>
+    <div class="gterm"><strong>Class-weighted loss</strong>Multiplying the loss for the minority class (hate) so missing it costs more. Forces the model to learn the rare class.</div>
+    <div class="gterm"><strong>Zero-shot transfer</strong>Applying an English-trained model to Urdu without any Urdu training examples.</div>
+    <div class="gterm"><strong>Few-shot (K-shot)</strong>Giving the model K labelled Urdu examples to adapt to the new language.</div>
+    <div class="gterm"><strong>Hate F1</strong>Primary metric: harmonic mean of hate precision and hate recall. Robust to class imbalance.</div>
+    <div class="gterm"><strong>FPR (False Positive Rate)</strong>FP / (FP + TN). How often non-hate is wrongly flagged. Fairness metric.</div>
+    <div class="gterm"><strong>Gradient accumulation</strong>Simulate a large batch size by accumulating gradients over several small batches before updating weights.</div>
+    <div class="gterm"><strong>fp16</strong>Half-precision training: halves VRAM usage, 2× faster, minor precision loss compensated by AMP loss scaling.</div>
+    <div class="gterm"><strong>Negative transfer</strong>Strong source-domain adaptation that actively hurts target-domain transfer. XLM-R-large on zero-shot Urdu.</div>
+    <div class="gterm"><strong>Degenerate solution</strong>A solution that satisfies the loss function but is useless in practice (e.g. predict all-hate → hate F1 = 0.697 but FPR = 1.0).</div>
+    <div class="gterm"><strong>Spurious correlation</strong>A feature (e.g. religious words) that correlates with a label in training data but not in the real world. Causes biased predictions.</div>
+    <div class="gterm"><strong>Prompt-based fine-tuning</strong>Reframing classification as fill-in-the-blank: append "[tweet] This text is [MASK]." and predict the masked word. Uses the pre-trained MLM head to avoid the random-init collapse problem.</div>
+    <div class="gterm"><strong>Verbalizer</strong>A mapping from class labels to vocabulary tokens. E.g. HATE → {hate, bad, vile}; NON-HATE → {normal, fine, okay}. Probabilities for each class are summed via log-sum-exp.</div>
+    <div class="gterm"><strong>MLM head</strong>Masked Language Modelling head — the output layer trained during pre-training to predict masked tokens. Contains rich semantic knowledge about word meaning that benefits prompt-based fine-tuning.</div>
+    <div class="gterm"><strong>TF-IDF</strong>Term Frequency–Inverse Document Frequency. Weights words by how often they appear in a document vs. how rare they are across all documents. Common words get low weight; distinctive words get high weight.</div>
+    <div class="gterm"><strong>FuzzyWuzzy</strong>Python library for fuzzy string matching. Computes partial string similarity (0–100) between texts. Handles Roman Urdu spelling variation where the same word may be spelled 5 different ways.</div>
+    <div class="gterm"><strong>Supervised upper bound</strong>Training with the full labelled target-language dataset — represents the best possible performance without transfer constraints. XLM-R-large on all 7,208 Urdu samples: Hate F1 = 0.895.</div>
+  </div>
+</div>
+
+<hr class="divider">
+<p style="text-align:center;color:#888;font-size:.83rem">
+  AI-600 Deep Learning · LUMS Spring 2026 · Muteeullah Baig &amp; Rana Muhammad Hamza<br>
+  Models trained on NVIDIA RTX 4070 Laptop GPU · Report formatted in ICML 2025 style<br>
+  Final results: XLM-R-large supervised Hate F1 = 0.895 · Prompt FT (K=64) Macro F1 = 0.745
+</p>
+
+</body>
+</html>
